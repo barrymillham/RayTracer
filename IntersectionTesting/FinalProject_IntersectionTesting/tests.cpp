@@ -154,7 +154,7 @@ void RunRayPolyTests() {
 	RunTest(
 		"And turns",
 		Test_RayPolyIntersect(HALFX_VECTOR, NEGZ_VECTOR, POINT_N2N10, POINT_2N10, POINT_010, BACK5ANDTURN_MATRIX),
-		5.5); // IS THIS RIGHT?? i think so...
+		5.5); // expected value set by Kory
 }
 
 void RunRayCubeTests() {

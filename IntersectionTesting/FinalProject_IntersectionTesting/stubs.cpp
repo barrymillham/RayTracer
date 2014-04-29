@@ -71,15 +71,12 @@ double rayTriangleIntersect(const vec3 &p0, const vec3 &v0, const vec3 &p1, cons
 	tStarInv[3][0] = tStarInv[3][1] = tStarInv[3][2] = 0;
 	D = tStarInv * D;
 
-	//put triangle in world space using the non-special transformation (tInv)
 	vec4 pos(p0,1);
 	pos = tInv * pos;
+
 	vec4 point1(p1,1);
-	//point1 = tInv * point1;
 	vec4 point2(p2,1);
-	//point2 = tInv * point2;
 	vec4 point3(p3,1);
-	//point3 = tInv * point3;
 
 
 	//RAY-PLANE INTERSECTION 
@@ -110,11 +107,11 @@ double rayTriangleIntersect(const vec3 &p0, const vec3 &v0, const vec3 &p1, cons
 	//NOW TEST TO SEE IF POINT IS INSIDE TRIANGLE
 	float s = area(v4Tov3(point1), v4Tov3(point2), v4Tov3(point3)); 
 	float s1 = area(v4Tov3(R), v4Tov3(point2), v4Tov3(point3)) / s; 
-	//if(s1 > 1 || s1 < 0) return -1; //we know it's outside the circle
+	if(s1 > 1 || s1 < 0) return -1; //we know it's outside the circle
 	float s2 = area(v4Tov3(R), v4Tov3(point3), v4Tov3(point1)) / s; 
-	//if(s2 > 1 || s2 < 0) return -1; //we know it's outside the circle
+	if(s2 > 1 || s2 < 0) return -1; //we know it's outside the circle
 	float s3 = area(v4Tov3(R), v4Tov3(point1), v4Tov3(point2)) / s; 
-	//if(s3 > 1 || s3 < 0) return -1; //we know it's outside the circle
+	if(s3 > 1 || s3 < 0) return -1; //we know it's outside the circle
 
 	if(epsilonEquals(1, s1+s2+s3)) return t;
 
