@@ -95,7 +95,61 @@ float area(vec3 p1, vec3 p2, vec3 p3)
 
 double rayCubeIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv)
 {
+	vec4 D(glm::normalize(v0), 0); // note: D = || P - E || = || v0 || (recall that v0 = P - E)
+    mat4 tStarInv = tInv; // tInv with three elements zeroed out - a special form that we need to transform D
+    tStarInv[3][0] = tStarInv[3][1] = tStarInv[3][2] = 0;
+    D = tStarInv * D;
 
+	//Transform p0 with tInv 
+	vec4 p(p0, 1);
+	p = tInv * p;
 
+	//bounds are {-0.5, -0.5, -0.5} -> {0.5, 0.5, 0.5} since this is all in local space
+	float T1x = (-0.5 - p.x) / D.x;
+	float T2x = ( 0.5 - p.x) / D.x;
+	float T1y = (-0.5 - p.y) / D.y;
+	float T2y = ( 0.5 - p.y) / D.y;
+	float T1z = (-0.5 - p.z) / D.z;
+	float T2z = ( 0.5 - p.z) / D.z;
+
+	float tmin, tmax, tymin, tymax, tzmin, tzmax;
+	
+	if (D.x >= 0) {
+		tmin = (-0.5 - p.x) / D.x;
+		tmax = ( 0.5 - p.x) / D.x;
+	} else {
+		tmin = ( 0.5 - p.x) / D.x;
+		tmax = (-0.5 - p.x) / D.x;
+	}
+	
+	if (D.y >= 0) {
+		tymin = (-0.5 - p.y) / D.y;
+		tymax = ( 0.5 - p.y) / D.y;
+	} else {
+		tymin = ( 0.5 - p.y) / D.y;
+		tymax = (-0.5 - p.y) / D.y;
+	}
+	
+	if ( (tmin > tymax) || (tymin > tmax) ) return -1.0;
+
+	if (tymin > tmin) tmin = tymin;
+	if (tymax < tmax) tmax = tymax;
+	
+	if (D.z >= 0) {
+		tzmin = (-0.5 - p.z) / D.z;
+		tzmax = ( 0.5 - p.z) / D.z;
+	} else {
+		tzmin = ( 0.5 - p.z) / D.z;
+		tzmax = (-0.5 - p.z) / D.z;
+	}
+
+	if ( (tmin > tzmax) || (tzmin > tmax) ) return -1.0;
+	if (tzmin > tmin) tmin = tzmin;
+	if (tzmax < tmax) tmax = tzmax;
+
+	//-10000000 -> 10000000 is maybe not what i want... it's supposed to be t0 -> t1 where that's a valid intersection interval
+	if ((tmin < 1000000) && (tmax > -1000000)) { 
+		return tmin;
+	}
 	return -1;
 }
