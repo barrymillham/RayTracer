@@ -151,20 +151,30 @@ double rayCubeIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv)
 
 	float tmin, tmax, tymin, tymax, tzmin, tzmax;
 	
-	if (D.x >= 0) {
-		tmin = (-0.5 - p.x) / D.x;
-		tmax = ( 0.5 - p.x) / D.x;
+	
+	/*	The next three defined floats are to avoid the case where the direction components would be -0.0
+		This is only a small part of the time, but sometimes that can happen through various operations,
+		and if it does happen, it screws up calculations. Defining this division float and then multiplying
+		it in is not only faster on the CPU, but it gets rid of that zero problem.
+	*/
+	float divideByDirectionX = 1 / D.x;
+	float divideByDirectionY = 1 / D.y;
+	float divideByDirectionZ = 1 / D.z;
+	
+	if (divideByDirectionX >= 0) {
+		tmin = (-0.5 - p.x) * divideByDirectionX;
+		tmax = ( 0.5 - p.x) * divideByDirectionX;
 	} else {
-		tmin = ( 0.5 - p.x) / D.x;
-		tmax = (-0.5 - p.x) / D.x;
+		tmin = ( 0.5 - p.x) * divideByDirectionX;
+		tmax = (-0.5 - p.x) * divideByDirectionX;
 	}
 	
-	if (D.y >= 0) {
-		tymin = (-0.5 - p.y) / D.y;
-		tymax = ( 0.5 - p.y) / D.y;
+	if (divideByDirectionY >= 0) {
+		tymin = (-0.5 - p.y) * divideByDirectionY;
+		tymax = ( 0.5 - p.y) * divideByDirectionY;
 	} else {
-		tymin = ( 0.5 - p.y) / D.y;
-		tymax = (-0.5 - p.y) / D.y;
+		tymin = ( 0.5 - p.y) * divideByDirectionY;
+		tymax = (-0.5 - p.y) * divideByDirectionY;
 	}
 	
 	if ( (tmin > tymax) || (tymin > tmax) ) return -1.0;
@@ -172,12 +182,12 @@ double rayCubeIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv)
 	if (tymin > tmin) tmin = tymin;
 	if (tymax < tmax) tmax = tymax;
 	
-	if (D.z >= 0) {
-		tzmin = (-0.5 - p.z) / D.z;
-		tzmax = ( 0.5 - p.z) / D.z;
+	if (divideByDirectionZ >= 0) {
+		tzmin = (-0.5 - p.z) * divideByDirectionZ;
+		tzmax = ( 0.5 - p.z) * divideByDirectionZ;
 	} else {
-		tzmin = ( 0.5 - p.z) / D.z;
-		tzmax = (-0.5 - p.z) / D.z;
+		tzmin = ( 0.5 - p.z) * divideByDirectionZ;
+		tzmax = (-0.5 - p.z) * divideByDirectionZ;
 	}
 
 	if ( (tmin > tzmax) || (tzmin > tmax) ) return -1.0;
@@ -185,7 +195,7 @@ double rayCubeIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv)
 	if (tzmax < tmax) tmax = tzmax;
 
 	//-10000000 -> 10000000 is maybe not what i want... it's supposed to be t0 -> t1 where that's a valid intersection interval
-	if ((tmin < 1000000) && (tmax > -1000000)) { 
+	if ((tmin < 100000000) && (tmax > -100000000)) { 
 		return tmin;
 	}
 	return -1;

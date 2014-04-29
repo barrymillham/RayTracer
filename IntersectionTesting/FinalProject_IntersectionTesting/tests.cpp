@@ -211,5 +211,4 @@ void ReportTest(std::string name, bool result) {
 	else {
 		// It can be very useful to put a breakpoint here
 	}
-
 }
