@@ -33,4 +33,12 @@ double Test_RayPolyIntersect(const vec3& P0, const vec3& V0, const vec3& p1, con
 // sphere. A unit cube extends from -0.5 to 0.5 in all axes.
 double Test_RayCubeIntersect(const vec3& P0, const vec3& V0, const mat4& T);
 
+// ** Real intersection functions - these take T-inverse directly instead of T. **
+// ** This will allow better integration with the scene graph code later, since **
+// ** we'll be caching T-inverse in the scene graph as suggested above.			**
+// ** The functions above will wrap these for the test code.					**
+double raySphereIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv);
+double rayTriangleIntersect(const vec3 &p0, const vec3 &v0, const vec3 *p1, const vec3 *p2, const vec3 *p3, const mat4 &tInv);
+double rayCubeIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv);
+
 #endif
