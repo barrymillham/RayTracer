@@ -38,7 +38,7 @@ double Test_RayCubeIntersect(const vec3& P0, const vec3& V0, const mat4& T);
 // ** we'll be caching T-inverse in the scene graph as suggested above.			**
 // ** The functions above will wrap these for the test code.					**
 double raySphereIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv);
-double rayTriangleIntersect(const vec3 &p0, const vec3 &v0, const vec3 *p1, const vec3 *p2, const vec3 *p3, const mat4 &tInv);
+double rayTriangleIntersect(const vec3 &p0, const vec3 &v0, const vec3 &p1, const vec3 &p2, const vec3 &p3, const mat4 &tInv);
 double rayCubeIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv);
 
 #endif
