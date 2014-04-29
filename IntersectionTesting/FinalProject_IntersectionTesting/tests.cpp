@@ -131,7 +131,7 @@ void RunRayPolyTests() {
 		Test_RayPolyIntersect(POSZ_VECTOR, NEGZ_VECTOR, POINT_N1N10, POINT_1N10, POINT_010, IDENTITY_MATRIX),
 		1.0);
 
-	RunTest(
+	RunTest(  
 		"Bye, Tri",
 		Test_RayPolyIntersect(POSXPOSZ_VECTOR, NEGZ_VECTOR, POINT_N1N10, POINT_1N10, POINT_010, IDENTITY_MATRIX),
 		-1.0);
@@ -154,7 +154,7 @@ void RunRayPolyTests() {
 	RunTest(
 		"And turns",
 		Test_RayPolyIntersect(HALFX_VECTOR, NEGZ_VECTOR, POINT_N2N10, POINT_2N10, POINT_010, BACK5ANDTURN_MATRIX),
-		TEN_KAZILLION); // TODO change this to the right number
+		5.5); // IS THIS RIGHT?? i think so...
 }
 
 void RunRayCubeTests() {
