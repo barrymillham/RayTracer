@@ -41,6 +41,10 @@ double raySphereIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv);
 double rayTriangleIntersect(const vec3 &p0, const vec3 &v0, const vec3 &p1, const vec3 &p2, const vec3 &p3, const mat4 &tInv);
 double rayCubeIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv);
 
-vec3 v4Tov3(const vec4 &t) {return vec3(t.x,t.y,t.z);}
+inline vec3 v4Tov3(const vec4 &t) {return vec3(t.x,t.y,t.z);}
+inline bool epsilonEquals(float n, float m) {if(abs(m-n) < 1e-3) return true;}
+
+float area(vec3 p1, vec3 p2, vec3 p3);
+
 
 #endif
