@@ -22,9 +22,46 @@ double Test_RayCubeIntersect(const vec3& P0, const vec3& V0, const mat4& T) {
 
 double raySphereIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv)
 {
+	vec4 D(glm::normalize(v0), 0); // note: D = || P - E || = || v0 || (recall that v0 = P - E)
+    mat4 tStarInv = tInv; // tInv with three elements zeroed out - a special form that we need to transform D
+    tStarInv[3][0] = tStarInv[3][1] = tStarInv[3][2] = 0;
+    D = tStarInv * D;
 
+	// Transform p0 with tInv (we don't want the three elements zeroed out for this)
+	vec4 p(p0, 1);
+	p = tInv * p;
+	// Since we're in model space, the sphere is simply a unit sphere centered at the origin.
+	// Substituting our ray equation, R = p + tD, into the sphere's equation, we get a quadratic equation with:
+	// a = 1; b = 2D . (p - (0,0,0)); c = || p - (0,0,0) ||^2 - 1
+
+	// Solve for t:
+	vec3 dTimes2 = v4Tov3(D);
+	dTimes2 *= 2;
+	double a = 1.0;
+	double b = glm::dot(dTimes2, v4Tov3(p));
+	double pLen = glm::length(v4Tov3(p));
+	double c = pLen*pLen - 1;
 	
-	return -1;
+	double discriminant = b*b - 4*a*c;
+	if(discriminant == 0) // one real solution
+	{
+		double t = (-b)/(2*a);
+		return t;
+	}
+	else if(discriminant > 0) // two real solutions
+	{
+		double t1 = (-b + sqrt(discriminant))/(2*a);
+		double t2 = (-b - sqrt(discriminant))/(2*a);
+		// If either value of t is positive, we want the smaller; otherwise, there's no intersection, and we should return -1
+		if(t1 <= t2 && t1 >= 0)
+			return t1;
+		else if(t1 > t2 && t2 >= 0)
+			return t2;
+		else
+			return -1;
+	}
+	else // no solutions, i.e. no intersection
+		return -1;
 }
 
 double rayTriangleIntersect(const vec3 &p0, const vec3 &v0, const vec3 &p1, const vec3 &p2, const vec3 &p3, const mat4 &tInv)
