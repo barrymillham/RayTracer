@@ -183,10 +183,14 @@ void RunRayCubeTests() {
 		Test_RayCubeIntersect(ZPOSTEN_VECTOR, NEGZ_VECTOR, DOUBLE_MATRIX),
 		9.0);
 
+
+	//My function is returning 6.3639607429504395 for the intersection
 	RunTest(
 		"Strafing the cube",
+		//					(-5.0f, 0.0f, 5.0f), (0.707, 0.0f, -0.707),  IDENTITY_MATRIX
+		//					RAY ORIGIN,			 RAY DIRECTION,			 TRANSFORMATION
 		Test_RayCubeIntersect(NEGFIVEOFIVE_VECTOR, POSXNEGZ_NORM_VECTOR, IDENTITY_MATRIX),
-		TEN_KAZILLION); // TODO change this to the right number
+		6.3639607); 
 }
 
 void RunYourTests() {
