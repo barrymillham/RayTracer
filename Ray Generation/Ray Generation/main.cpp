@@ -10,6 +10,7 @@
 #include "../glm/gtc/matrix_transform.hpp"
 
 using namespace std;
+using namespace glm;
 
 int main(int argc, char** argv) {
 	unsigned int width = 800;
@@ -19,24 +20,46 @@ int main(int argc, char** argv) {
 	output.SetSize(width, height);
 	output.SetBitDepth(24);
 
-	//Changed the way the image was being generated so we could more clearly see the bitmap coordinate system:
-	//(0,0) is the top left corner of the bmp as this code demonstrates:
-	for (unsigned int x = 0; x < width; x++) {
-		for (unsigned int y = 0; y < height; y++) {
-			output(x, y)->Red = 255;
-			output(x, y)->Blue = 255;
-			output(x, y)->Green = 0;
+	/*Pseudocode for what we need to do for this milestone
+
+	//Ray equation: R = E + t(P-E)
+	For x = 0 to width - 1					//  For every pixel
+		for y = 0 to height - 1				// ^^^
+			//Calculate Ray Direction based off of x,y
+			
+			P = M + (2*x/(width-1)-1)*H + (2*y/(height-1)-1)*V
+			D = (P-E)/|P-E|					//D is direction of the ray. E is origin point, P is point somewhere along the ray
+			pixel(x,y)->Red = D.x
+			pixel(x,y)->Green = D.y
+			pixel(x,y)->Blue = D.z
+	*/
+
+	/*		~Extra notes~  
+	(0,0) is the top left corner of the bmp
+	//Look in powerpoints notes: Raytracing part 3 
+	V = up * tan(theta)
+	H = -u * tan(theta)
+	
+	
+	
+	
+	*/
+
+
+	//Yeah this doesn't work. Worth a shot.
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			vec3 E = vec3(x,y,0);
+			vec3 P = vec3(x,y,1);
+			vec3 D = P - E;
+			D = normalize(D);
+			output(x,y)->Red = D.x;
+			output(x,y)->Green = D.y;
+			output(x,y)->Blue = D.z;
 		}
 	}
-
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
-			output(i, j)->Green = 255;
-			output(i, j)->Red = 0;
-			output(i, j)->Blue = 0;
-		}
-	}
-
+	
+	
 	output.WriteToFile("output.bmp");
 	return 0;
 }
