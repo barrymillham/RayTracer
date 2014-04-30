@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 	/*		~Extra notes~  
 	(0,0) is the top left corner of the bmp
 	//Look in powerpoints notes: Raytracing part 3 
-	V = up * tan(theta)
+	V = up * tan(phi)
 	H = -u * tan(theta)
 	
 	
@@ -50,7 +50,11 @@ int main(int argc, char** argv) {
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
 			vec3 E = vec3(x,y,0);
-			vec3 P = vec3(x,y,1);
+			//vec3 P = vec3(x,y,1);
+
+			//what is M? Also, what is up, phi, u, and theta, to be used in calculating H and V?
+			//vec3 P = M + (2*x/(width-1)-1)*H + (2*y/(height-1)-1)*V;
+
 			vec3 D = P - E;
 			D = normalize(D);
 			output(x,y)->Red = D.x;
