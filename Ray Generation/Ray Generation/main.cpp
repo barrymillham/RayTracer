@@ -18,33 +18,22 @@ int main(int argc, char** argv) {
 	BMP output;
 	output.SetSize(width, height);
 	output.SetBitDepth(24);
-	
-	for(unsigned int x = 0; x < width; x++) {
-		for(unsigned int y = 0; y < height; y++) {
-			if(x % 2 == 0) {
-				if(y % 2 == 0) {
-					output(x, y)->Red = 255;
-					output(x, y)->Blue = 0;
-					output(x, y)->Green = 0;
-				}
-				else {
-					output(x, y)->Red = 0;
-					output(x, y)->Blue = 255;
-					output(x, y)->Green = 0;
-				}
-			}
-			else {
-				if(y % 2 == 0) {
-					output(x, y)->Red = 0;
-					output(x, y)->Blue = 255;
-					output(x, y)->Green = 0;
-				}
-				else {
-					output(x, y)->Red = 255;
-					output(x, y)->Blue = 0;
-					output(x, y)->Green = 0;
-				}
-			}
+
+	//Changed the way the image was being generated so we could more clearly see the bitmap coordinate system:
+	//(0,0) is the top left corner of the bmp as this code demonstrates:
+	for (unsigned int x = 0; x < width; x++) {
+		for (unsigned int y = 0; y < height; y++) {
+			output(x, y)->Red = 255;
+			output(x, y)->Blue = 255;
+			output(x, y)->Green = 0;
+		}
+	}
+
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			output(i, j)->Green = 255;
+			output(i, j)->Red = 0;
+			output(i, j)->Blue = 0;
 		}
 	}
 

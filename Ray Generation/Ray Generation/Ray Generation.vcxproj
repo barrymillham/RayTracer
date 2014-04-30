@@ -76,6 +76,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="EasyBMP.h" />
+    <ClInclude Include="EasyBMP_BMP.h" />
+    <ClInclude Include="EasyBMP_DataStructures.h" />
+    <ClInclude Include="EasyBMP_VariousBMPutilities.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EasyBMP.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="output.bmp" />
+    <Image Include="ray_gradient.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
