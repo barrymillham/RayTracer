@@ -80,10 +80,12 @@
     <ClInclude Include="EasyBMP_BMP.h" />
     <ClInclude Include="EasyBMP_DataStructures.h" />
     <ClInclude Include="EasyBMP_VariousBMPutilities.h" />
+    <ClInclude Include="Ray.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EasyBMP.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Ray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />

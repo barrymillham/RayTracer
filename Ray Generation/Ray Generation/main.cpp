@@ -13,8 +13,20 @@ using namespace std;
 using namespace glm;
 
 int main(int argc, char** argv) {
-	unsigned int width = 800;
-	unsigned int height = 600;
+	unsigned int width = 800; //V
+	unsigned int height = 600; //H
+
+	//build a fake camera
+	vec3 eye = vec3(0,0,0);
+	vec3 M = vec3(0,0,1);
+	vec3 C = M - eye;
+	vec3 UP = vec3(0,1,0);
+	vec3 V = UP;
+	V *= glm::tan(45.0f);
+	mat4 rotationMatrix = glm::rotate(mat4(1.0f), 90.0f, V);
+	vec4 H4 = vec4(V.x, V.y, V.z, 0.0f) * rotationMatrix;
+	H4 *= 1.333f;
+	vec3 H = vec3(H4.x, H4.y, H4.z);
 
 	BMP output;
 	output.SetSize(width, height);
@@ -37,22 +49,27 @@ int main(int argc, char** argv) {
 	/*		~Extra notes~  
 	(0,0) is the top left corner of the bmp
 	//Look in powerpoints notes: Raytracing part 3 
-	V = up * tan(theta)
+	V = up * tan(phi)
 	H = -u * tan(theta)
-	
-	
+	phi = angle between 
+	M is the center of the screen I think? So (400, 300)?
+		
 	
 	
 	*/
 
 
-	//Yeah this doesn't work. Worth a shot.
+	//Yeah this doesn't work. Worth a shot. 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			vec3 E = vec3(x,y,0);
-			vec3 P = vec3(x,y,1);
-			vec3 D = P - E;
-			D = normalize(D);
+			vec3 rayPositionH = H;
+			vec3 rayPositionV = V;
+			rayPositionH *= (2*x/(width-1)-1);
+			rayPositionV *= (2*y/(height-1)-1);
+			vec3 P = M + rayPositionH + rayPositionV;
+			
+			//D = (P-E)/|P-E|
+			vec3 D = normalize(P - eye);
 			output(x,y)->Red = D.x;
 			output(x,y)->Green = D.y;
 			output(x,y)->Blue = D.z;
