@@ -36,12 +36,15 @@ public:
 		Node(AbstractGeometryItem *geo, mat4 transform) : geo(geo), transform(transform)
 		{ 
 			selected = false;
+			if (geo != NULL) //yTrans = 0.0f; 
+				//yTrans = geo->getHeight();
+				translate(vec3(0.0, geo->getHeight(), 0.0f));
+			else yTrans = 0.0f;
+
+			
 		}
 
-		// Destructor
-		// Deallocates all child nodes.
-		~Node()
-		{
+		~Node() { // Destructor deallocates all child nodes.
 			for(int i = 0; i < children.size(); i++)
 				delete children[i];
 		}
@@ -52,6 +55,14 @@ public:
 		void addChild(Node *child)
 		{
 			children.push_back(child);
+		}
+
+		//Used to translate the Scenegraph Node up by the appropriate amount
+		void setYTrans(float h) {
+			yTrans = h;
+		}
+		float getYTrans() {
+			return yTrans;
 		}
 
 		// Draw the node, and all of its child nodes (preorder traversal).
@@ -106,6 +117,7 @@ public:
 		mat4 transform;
 		std::vector<Node*> children; // empty if this is a leaf
 		bool selected;
+		float yTrans;
 	};
 
 	// Constructor
@@ -140,9 +152,11 @@ public:
 	}
 
 	// Draws the scene (traversing from the head node)
-	void draw()
+	void draw(mat4 m = mat4(1.0f))
 	{
-		head->draw(mat4(1.0f));
+		mat4 translation = glm::translate(m, glm::vec3(0.0f,head->getYTrans(),0.0f));
+		m = (m) * (translation);
+		head->draw(m);
 	}
 
 	

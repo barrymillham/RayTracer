@@ -155,7 +155,6 @@ double rayCubeIntersect(const vec3 &p0, const vec3 &v0, const mat4 &tInv)
 
 	float tmin, tmax, tymin, tymax, tzmin, tzmax;
 	
-	
 	/*	The next three defined floats are to avoid the case where the direction components would be -0.0
 		This is only a small part of the time, but sometimes that can happen through various operations,
 		and if it does happen, it screws up calculations. Defining this division float and then multiplying

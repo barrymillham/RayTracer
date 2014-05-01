@@ -70,13 +70,6 @@ private:
 
 	//AttribLocations attribs; // now a global variable, declared as an extern in Drawing.h and defined in MyGLWidget.cpp
 
-	//unsigned int u_projLocation;
-	//unsigned int u_cameraLocation;
-	//unsigned int u_modelLocation;
-	//unsigned int u_lightPos;
-	//unsigned int u_color;
-	//unsigned int u_ambientOnly; // integer used as a boolean switch to turn on/off advanced lighting
-
 	Mesh mesh;
 
 	std::vector<SceneGraph::Node*> objects;

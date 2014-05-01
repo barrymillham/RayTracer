@@ -71,10 +71,10 @@ void MyGLWidget::initializeGL() {
 	chair.initialize(vec3(0,0,1)); // blue
 
 	// Parse scene description and build scene graph
-	//parseSceneDescription(scene, "testScene.txt");
+	parseSceneDescription(scene, "testScene.txt");
 
 	// Read geometry description and buffer the mesh
-	parseGeometryDescription(mesh, "extrusion1.dat");
+	//parseGeometryDescription(mesh, "extrusion1.dat");
 
 	// Initialize zoom, upDownAngle, and leftRightAngle
 	zoom = 0;
@@ -98,7 +98,8 @@ void MyGLWidget::paintGL() {
 	whiteBox.draw(lightBoxTrans * lightBoxScale);
 	glUniform1i(attribs.u_ambientOnly, 0); // re-enable advanced lighting for the rest of the scene
 
-	mesh.draw(mat4(1.0f));
+	//mesh.draw(mat4(1.0f));
+	scene.draw();
 
 	glFlush();
 }
@@ -164,6 +165,20 @@ char* MyGLWidget::textFileRead(const char* fileName) {
 
 void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 {
+	
+	//The way stacking works: 
+	/*
+	The yScale of each piece of geometry is recorded as that geometry's height.
+	That geometry is given to a SceneGraph Node which is then added as a child
+		to furnitureRoot. 
+	FurnitureRoot is a childNode of floor.
+	Floor is a child of Scene, which is a member of MyGlWidget.
+
+	Then, when you call 
+	*/
+
+	
+	
 	// Clear the scene, in case there's already something there
 	scene.clear();
 
@@ -246,27 +261,20 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 
 			AbstractGeometryItem *geo;
 
-			float itemHeight;
 			if(type == "box")
 			{
-				// Unit boxes are 1x1x1, so we need to raise this grid location's stacking height by .5*yScale.
-				itemHeight = yScale;// - 0.25f*yScale;
-
 				geo = &yellowBox;
+				geo->setHeight(yScale); 
 			}
 			else if(type == "chair")
 			{
-				// Unit chairs are 2.3 units tall
-				itemHeight = 2.3f*yScale;// - 0.25f*yScale;
-
 				geo = &chair;
+				geo->setHeight(yScale);
 			}
 			else if(type == "table")
 			{
-				// Unit tables are 1.2 units tall
-				itemHeight = 1.2f*yScale;// - 0.25f*yScale;
-
 				geo = &table;
+				geo->setHeight(yScale);
 			}
 			else
 			{
@@ -275,7 +283,7 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 				throw ex;
 			}
 
-
+			
 			// For the translation, first we need to determine where this item's grid position is in world space.
 			// For simplicity, we'll define our grid to be a floorXSize-by-floorZSize "square" in the x-z plane, centered
 			// at the origin. The grid point 0,0 will be at (-floorXSize*.5f, -floorZSize*.5f) in world space.
@@ -286,7 +294,8 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 			mat4 trans_rot = glm::rotate(mat4(1.0f), rotation, vec3(0.0f, 1.0f, 0.0f)); // rotation is about the y-axis
 			mat4 trans_scale = glm::scale(mat4(1.0f), vec3(xScale, yScale, zScale));
 			
-			stackingLevels[xIndex][zIndex] += itemHeight;
+			//stackingLevels[xIndex][zIndex] += itemHeight;
+			stackingLevels[xIndex][zIndex] = 0.0f;
 
 			SceneGraph::Node *thisItem;
 

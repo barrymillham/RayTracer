@@ -199,10 +199,31 @@ public:
 		glUniformMatrix4fv(attribs.u_model, 1, GL_FALSE, &(mat4(1.0f))[0][0]);
 		glUniform3f(attribs.u_color, 1.0f, 0.0f, 0.0f); // set color to red (TODO: don't hardcode this)
 		//glUniform1i(attribs.u_ambientOnly, 1); // turn off advanced lighting (for debugging - comment out under normal circumstances)
-
+			
 		// Draw the mesh
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	}
+
+	void subDivide() {
+		//Mesh newMesh = Mesh();
+
+		//int i, j, a, b, c, d;
+		//Face f;
+		//Vertex v, x;
+ 
+		
+		
+		/*foreach (i, f, m->f) {
+			foreach(j, v, f->v) {
+				_get_idx(a, updated_point(v));
+				_get_idx(b, edge_point(elem(f->e, (j + 1) % len(f->e))));
+				_get_idx(c, face_point(f));
+				_get_idx(d, edge_point(elem(f->e, j)));
+				model_add_face(nm, 4, a, b, c, d);
+			}
+		}*/
+
 	}
 
 private:
