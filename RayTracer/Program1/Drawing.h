@@ -22,3 +22,5 @@ struct AttribLocations
 	unsigned u_color;
 	unsigned u_ambientOnly;
 };
+
+extern AttribLocations attribs;

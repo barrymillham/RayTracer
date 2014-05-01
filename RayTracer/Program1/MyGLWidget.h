@@ -68,7 +68,7 @@ private:
 	unsigned int fragmentShader;
 	unsigned int shaderProgram;
 
-	AttribLocations attribs;
+	//AttribLocations attribs; // now a global variable, declared as an extern in Drawing.h and defined in MyGLWidget.cpp
 
 	//unsigned int u_projLocation;
 	//unsigned int u_cameraLocation;

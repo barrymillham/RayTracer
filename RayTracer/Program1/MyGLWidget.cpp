@@ -10,6 +10,8 @@
 #include "MyGLWidget.h"
 #include "../glm/gtc/matrix_transform.hpp"
 
+AttribLocations attribs;
+
 MyGLWidget::MyGLWidget(QWidget* parent) : QGLWidget(parent) {
 	iterator = 0;
 }
