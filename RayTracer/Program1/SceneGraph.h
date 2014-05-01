@@ -11,11 +11,13 @@
 
 #include <vector>
 #include "../glm/glm.hpp"
+#include "../glm/gtc/matrix_transform.hpp"
 
 #include "AbstractGeometryItem.h"
 #include "ExceptionClasses.h" // not using this yet in SceneGraph
 
 using glm::mat4;
+using glm::vec3;
 
 class SceneGraph
 {

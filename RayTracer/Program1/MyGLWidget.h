@@ -11,6 +11,7 @@
 #define GLEW_STATIC
 #include "glew.h"
 #include "../glm/glm.hpp"
+#include "../glm/gtc/matrix_transform.hpp"
 #include <QGLWidget>
 #include <QLineEdit>
 #include <stdlib.h>
