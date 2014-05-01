@@ -63,10 +63,30 @@ public:
 				children[i]->draw(composition);
 		}
 
+		void rotateX(float degrees)
+		{
+			mat4 rotationMatrix = glm::rotate(mat4(1.0f), degrees, vec3(1,0,0));
+			transform *= rotationMatrix;
+		}
 		void rotateY(float degrees)
 		{
 			mat4 rotationMatrix = glm::rotate(mat4(1.0f), degrees, vec3(0,1,0));
 			transform *= rotationMatrix;
+		}
+		void rotateZ(float degrees)
+		{
+			mat4 rotationMatrix = glm::rotate(mat4(1.0f), degrees, vec3(0,0,1));
+			transform *= rotationMatrix;
+		}
+		void translate(vec3 transVec)
+		{
+			mat4 translationMatrix = glm::translate(mat4(1.0f), transVec); 
+			transform *= translationMatrix;
+		}
+		void scale(vec3 scalar)
+		{
+			mat4 scaleMatrix = glm::scale(mat4(1.0f), scalar);
+			transform *= scaleMatrix;
 		}
 
 	private:
