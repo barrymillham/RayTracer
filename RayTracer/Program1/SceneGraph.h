@@ -63,6 +63,12 @@ public:
 				children[i]->draw(composition);
 		}
 
+		void rotateY(float degrees)
+		{
+			mat4 rotationMatrix = glm::rotate(mat4(1.0f), degrees, vec3(0,1,0));
+			transform *= rotationMatrix;
+		}
+
 	private:
 		AbstractGeometryItem *geo; // null if this is a transformation-only node
 		mat4 transform;
