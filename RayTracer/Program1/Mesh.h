@@ -18,6 +18,8 @@ using glm::vec4;
 using glm::mat4;
 
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 #include "Drawing.h"
 #include "ExceptionClasses.h"
@@ -25,11 +27,57 @@ using glm::mat4;
 class Mesh
 {
 public:
-	struct Face // triangular face structure
+	// Forward declarations since Face, Vertex, and HalfEdge all cross-reference each other
+	struct Face;
+	struct Vertex;
+	struct HalfEdge;
+
+	struct Face
 	{
-		vec3 p0, p1, p2; // the three points of the triangle
-		vec3 normal; // the normal for this face
-		vec4 color; // the color the face should be drawn (to be used later - right now we're specifying color per-object, i.e. for the whole mesh, as a uniform)
+		vec3 p0, p1, p2; // TODO: remove these, these are only useful for the old face list structure and are in place so we don't break things yet
+		Face() // also to be removed once half-edge is fully implemented
+		{ }
+
+
+		vec3 normal;
+
+		HalfEdge *halfEdge;
+		unsigned uid;
+
+		Face(HalfEdge *halfEdge, vec3 normal) : halfEdge(halfEdge), normal(normal)
+		{
+			srand(time(0));
+			uid = (unsigned)rand();
+		}
+	};
+
+	struct Vertex
+	{
+		vec3 pos;
+		vec3 color; // not used at the moment because we don't have a color VBO (it was removed when per-object colors were implemented...might want to rethink this)
+
+		HalfEdge *halfEdge;
+		unsigned uid;
+
+		Vertex(HalfEdge *halfEdge, vec3 pos) : halfEdge(halfEdge), pos(pos)
+		{
+			srand(time(0));
+			uid = (unsigned)rand();
+		}
+
+		// Computes the normal for this vertex as the average of the face normals it's associated with
+		vec3 getNormal();
+	};
+
+	struct HalfEdge
+	{
+		Vertex *vertex;
+		HalfEdge *next; // next in CCW order on this face
+		HalfEdge *sym;
+		Face *face;
+
+		HalfEdge(Vertex *vertex, HalfEdge *next, HalfEdge *sym, Face *face) : vertex(vertex), next(next), sym(sym), face(face)
+		{ }
 	};
 
 	Mesh() : buffered(false)

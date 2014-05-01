@@ -175,6 +175,7 @@
     </ClCompile>
     <ClCompile Include="GeometryItem.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MyGLWidget.cpp" />
     <ClCompile Include="program1.cpp" />
   </ItemGroup>

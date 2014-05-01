@@ -74,6 +74,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_MyLineEdit.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="program1.h">
