@@ -60,6 +60,8 @@ public slots:
 	void lightYDec();
 	void lightZInc();
 	void lightZDec();
+	void nextObject();
+	void previousObject();
 
 private:
 	unsigned int vertexShader;
@@ -76,6 +78,9 @@ private:
 	//unsigned int u_ambientOnly; // integer used as a boolean switch to turn on/off advanced lighting
 
 	Mesh mesh;
+
+	std::vector<SceneGraph::Node*> objects;
+	int iterator;
 
 	SceneGraph scene;
 	Box whiteBox, greenBox, yellowBox;

@@ -34,7 +34,9 @@ public:
 		//		the Node (i.e. memory management is the caller's responsibility).
 		// transform: transformation matrix for this node
 		Node(AbstractGeometryItem *geo, mat4 transform) : geo(geo), transform(transform)
-		{ }
+		{ 
+			selected = false;
+		}
 
 		// Destructor
 		// Deallocates all child nodes.
@@ -60,7 +62,12 @@ public:
 		{
 			mat4 composition = parentTransform * transform;
 			if(geo)
+			{
+				//glUniform1i(attribs.u_ambientOnly, 1);
 				geo->draw(composition);
+				//glUniform1i(attribs.u_ambientOnly, 0); // re-enable advanced lighting for the rest of the scene
+
+			}
 			for(int i = 0; i < children.size(); i++)
 				children[i]->draw(composition);
 		}
@@ -91,10 +98,14 @@ public:
 			transform *= scaleMatrix;
 		}
 
+		void setSelected(bool s) {selected = s;}
+		bool getSelected() {return selected;}
+
 	private:
 		AbstractGeometryItem *geo; // null if this is a transformation-only node
 		mat4 transform;
 		std::vector<Node*> children; // empty if this is a leaf
+		bool selected;
 	};
 
 	// Constructor
@@ -133,6 +144,8 @@ public:
 	{
 		head->draw(mat4(1.0f));
 	}
+
+	
 
 private:
 	Node *head;

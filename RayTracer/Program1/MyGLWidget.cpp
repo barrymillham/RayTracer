@@ -11,6 +11,7 @@
 #include "../glm/gtc/matrix_transform.hpp"
 
 MyGLWidget::MyGLWidget(QWidget* parent) : QGLWidget(parent) {
+	iterator = 0;
 }
 
 MyGLWidget::~MyGLWidget() {
@@ -198,6 +199,7 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, glm::inverse(floorScale) * onFloor_trans);
 		floor->addChild(furnitureRoot);
 
+
 		// Add walls around the edges of the floor
 		/*mat4 frontWall_scale = glm::scale(mat4(1.0f), vec3(floorXSize, WALL_HEIGHT, 0.1));
 		mat4 frontWall_trans = glm::translate(mat4(1.0f), vec3(0, WALL_HEIGHT*.5, (floorZSize*.5)+0.05));
@@ -302,6 +304,10 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 				stackingItems[xIndex][zIndex]->addChild(thisItem);
 			}
 			stackingItems[xIndex][zIndex] = thisItem;
+
+			
+			//as of right now, i'm only having "furniture roots" be selectable until we get stacking working
+			objects.push_back(thisItem);
 		}
 
 		// Free dynamically allocated memory for grid arrays
@@ -312,6 +318,10 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		}
 		delete [] stackingLevels;
 		delete [] stackingItems;
+
+		//set the first vector as the default "selected"
+		objects[0]->setSelected(true);
+		iterator = 0;
 	}
 	catch(std::ifstream::failure)
 	{
@@ -387,6 +397,23 @@ void MyGLWidget::lightZDec()
 {
 	lightPos.z -= 1;
 	update();
+}
+
+void MyGLWidget::nextObject()
+{
+	objects[iterator]->setSelected(false);
+	iterator++;
+	if(iterator > objects.size()-1) iterator = 0;
+	objects[iterator]->setSelected(true);
+}
+
+void MyGLWidget::previousObject()
+{
+	objects[iterator]->setSelected(false);
+	iterator--;
+	if(iterator < 0)
+		iterator = objects.size()-1;
+	objects[iterator]->setSelected(true);
 }
 
 void MyGLWidget::parseGeometryDescription(Mesh &mesh, std::string filename)
