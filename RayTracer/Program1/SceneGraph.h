@@ -15,6 +15,8 @@
 
 #include "AbstractGeometryItem.h"
 #include "ExceptionClasses.h" // not using this yet in SceneGraph
+#include "Drawing.h"
+
 
 using glm::mat4;
 using glm::vec3;
@@ -63,10 +65,14 @@ public:
 			mat4 composition = parentTransform * transform;
 			if(geo)
 			{
-				//glUniform1i(attribs.u_ambientOnly, 1);
-				geo->draw(composition);
-				//glUniform1i(attribs.u_ambientOnly, 0); // re-enable advanced lighting for the rest of the scene
-
+				if(selected)
+				{
+					glUniform1i(attribs.u_ambientOnly, 1);
+					geo->draw(composition);
+					glUniform1i(attribs.u_ambientOnly, 0); // re-enable advanced lighting for the rest of the objects
+				}
+				else 
+					geo->draw(composition);
 			}
 			for(int i = 0; i < children.size(); i++)
 				children[i]->draw(composition);
