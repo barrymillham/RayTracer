@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1000</width>
-      <height>620</height>
+      <width>1001</width>
+      <height>561</height>
      </rect>
     </property>
    </widget>
@@ -246,6 +246,32 @@
      <string>Light Controls</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_7">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>570</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Next Object</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_8">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>570</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Previous Object</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -290,6 +316,8 @@
     <slot>lightYDec()</slot>
     <slot>lightZInc()</slot>
     <slot>lightZDec()</slot>
+    <slot>nextObject()</slot>
+    <slot>previousObject()</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -318,7 +346,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>108</x>
-     <y>611</y>
+     <y>593</y>
     </hint>
    </hints>
   </connection>
@@ -334,7 +362,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>314</x>
-     <y>627</y>
+     <y>593</y>
     </hint>
    </hints>
   </connection>
@@ -350,7 +378,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>446</x>
-     <y>623</y>
+     <y>593</y>
     </hint>
    </hints>
   </connection>
@@ -382,7 +410,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>637</x>
-     <y>621</y>
+     <y>593</y>
     </hint>
    </hints>
   </connection>
@@ -398,7 +426,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>909</x>
-     <y>597</y>
+     <y>593</y>
     </hint>
    </hints>
   </connection>
@@ -414,7 +442,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>896</x>
-     <y>626</y>
+     <y>593</y>
     </hint>
    </hints>
   </connection>
@@ -430,7 +458,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>871</x>
-     <y>628</y>
+     <y>593</y>
     </hint>
    </hints>
   </connection>
@@ -446,7 +474,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>942</x>
-     <y>630</y>
+     <y>593</y>
     </hint>
    </hints>
   </connection>
@@ -462,7 +490,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>979</x>
-     <y>621</y>
+     <y>593</y>
     </hint>
    </hints>
   </connection>
@@ -478,7 +506,39 @@
     </hint>
     <hint type="destinationlabel">
      <x>966</x>
-     <y>631</y>
+     <y>593</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_8</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>previousObject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>617</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>410</x>
+     <y>581</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_7</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>nextObject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>617</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>528</x>
+     <y>581</y>
     </hint>
    </hints>
   </connection>
