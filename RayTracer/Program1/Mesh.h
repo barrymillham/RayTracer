@@ -44,6 +44,11 @@ public:
 		HalfEdge *halfEdge;
 		unsigned uid;
 
+		// Remove the face from the mesh.
+		// (Note: this does not actually remove the face from the mesh's internal storage. It will simply be skipped over when creating
+		// an index buffer, and thus not drawn.)
+		void deleteFace();
+
 		Face(HalfEdge *halfEdge, vec3 normal) : halfEdge(halfEdge), normal(normal)
 		{
 			srand(time(0));
@@ -58,6 +63,10 @@ public:
 
 		HalfEdge *halfEdge;
 		unsigned uid;
+
+		// The index of this vertex in the vertex buffer (used to build an index buffer)
+		// (Should only be set and used internally by Mesh and Vertex methods.)
+		unsigned internalIndex;
 
 		Vertex(HalfEdge *halfEdge, vec3 pos) : halfEdge(halfEdge), pos(pos)
 		{
@@ -90,6 +99,12 @@ public:
 		glDeleteBuffers(1, &ibo);
 	}
 
+	void addFace(HalfEdge *halfEdge, vec3 normal)
+	{
+		faces.push_back(Face(halfEdge, normal));
+	}
+
+	// DEPRECATED - from face-list implementation
 	void addFace(Face face)
 	{
 		faces.push_back(face);
@@ -104,11 +119,14 @@ public:
 		}
 	}
 
+	// DEPRECATED - from face-list implementation
+	// (the half-edge version will be similar, but should probably return a pointer instead)
 	Face getFace(int index)
 	{
 		return faces[index];
 	}
 
+	// TODO: update this for half-edge
 	// Remove all faces from the mesh structure
 	void clear()
 	{
@@ -126,6 +144,11 @@ public:
 		buffered = false;
 	}
 
+	// Build an index buffer for this mesh (using vertex normals)
+	// Note: the std::vector indexBuffer will be emptied first, if there's anything in it.
+	void fillIndexBuffer(std::vector<unsigned> &indexBuffer);
+
+	// TODO: update for half-edge
 	void bufferData(AttribLocations attribs)
 	{
 		Mesh::attribs = attribs;
@@ -184,6 +207,8 @@ public:
 
 private:
 	std::vector<Face> faces;
+	std::vector<Vertex> vertices;
+	std::vector<HalfEdge> halfEdges;
 
 	std::vector<vec3> positions;
 	std::vector<vec3> normals;
