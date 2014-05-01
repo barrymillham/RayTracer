@@ -21,4 +21,8 @@ class AbstractGeometryItem
 {
 public:
 	virtual void draw(glm::mat4 transform) = 0;
+	virtual float getHeight() {return height;}
+	virtual void setHeight(float h) {height = h;}
+protected: 
+	float height;
 };
