@@ -174,7 +174,16 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 	FurnitureRoot is a childNode of floor.
 	Floor is a child of Scene, which is a member of MyGlWidget.
 
-	Then, when you call 
+	//Drawing:
+	Then, when you call scene.draw(), it calls head->draw() (Where head is the topmost node)
+	That first transforms the same as it's parent's transformation, and then also transforms by
+		the transformation that you pass into it in the Node() constructor.
+	Then it calls draw() on its geometry. This draw function is virtual and routes to
+		the draw function contained in the class that matches the type of geometry calling draw()
+	That draw function will transform a box into whatever position it needs to be in in local 
+		space and then call the most basic Draw() function (member of GeometryItem), which
+		takes the VBO, NBO and IBO into account and sends all the information into the shader.
+
 	*/
 
 	
@@ -297,7 +306,7 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 			//stackingLevels[xIndex][zIndex] += itemHeight;
 			stackingLevels[xIndex][zIndex] = 0.0f;
 
-			SceneGraph::Node *thisItem;
+			SceneGraph::Node *thisItem = new SceneGraph::Node(geo, mat4(1.0f));
 
 			// Add the furniture item as a child node of whatever's under it on its grid location.
 			// If there's nothing under it, we will make it a child of the furniture root.
@@ -416,6 +425,7 @@ void MyGLWidget::nextObject()
 	iterator++;
 	if(iterator > objects.size()-1) iterator = 0;
 	objects[iterator]->setSelected(true);
+	repaint();
 }
 
 void MyGLWidget::previousObject()
@@ -425,6 +435,7 @@ void MyGLWidget::previousObject()
 	if(iterator < 0)
 		iterator = objects.size()-1;
 	objects[iterator]->setSelected(true);
+	repaint();
 }
 
 void MyGLWidget::parseGeometryDescription(Mesh &mesh, std::string filename)

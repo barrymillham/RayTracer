@@ -38,12 +38,9 @@ public:
 		Node(AbstractGeometryItem *geo, mat4 transform) : geo(geo), transform(transform)
 		{ 
 			selected = false;
-			if (geo != NULL) //yTrans = 0.0f; 
-				//yTrans = geo->getHeight();
-				translate(vec3(0.0, geo->getHeight(), 0.0f));
-			else yTrans = 0.0f;
-
 			
+			//if (geo != NULL) translate(vec3(0.0, geo->getHeight(), 0.0f));
+			yTrans = 0.0;
 		}
 
 		~Node() { // Destructor deallocates all child nodes.
@@ -160,8 +157,8 @@ public:
 	// Draws the scene (traversing from the head node)
 	void draw(mat4 m = mat4(1.0f))
 	{
-		mat4 translation = glm::translate(m, glm::vec3(0.0f,head->getYTrans(),0.0f));
-		m = (m) * (translation);
+		/*mat4 translation = glm::translate(m, glm::vec3(0.0f,head->getYTrans(),0.0f));
+		m = (m) * (translation);*/
 		head->draw(m);
 	}
 

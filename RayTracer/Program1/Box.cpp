@@ -42,9 +42,9 @@ void Box::staticInitialize(AttribLocations attribs)
 
 	// Back face (blue)
 	geo.points[4] = vec3(0.5f,0.5f,-0.5f); geo.normals[4] = vec3(0,0,-1);
-	geo.points[5] = vec3(0.5f,-0.5f,-0.5f); geo.normals[5] = vec3(0,0,-1);
-	geo.points[6] = vec3(-0.5f,-0.5f,-0.5f); geo.normals[5] = vec3(0,0,-1);
-	geo.points[7] = vec3(-0.5f,0.5f,-0.5f); geo.normals[6] = vec3(0,0,-1);
+	geo.points[5] = vec3(-0.5f,0.5f,-0.5f); geo.normals[5] = vec3(0,0,-1);
+	geo.points[6] = vec3(-0.5f,-0.5f,-0.5f); geo.normals[6] = vec3(0,0,-1);
+	geo.points[7] = vec3(0.5f,-0.5f,-0.5f); geo.normals[7] = vec3(0,0,-1);
 
 	// Right face (red)
 	geo.points[8] = vec3(0.5f,0.5f,-0.5f); geo.normals[8] = vec3(1,0,0);
@@ -86,12 +86,6 @@ void Box::staticInitialize(AttribLocations attribs)
 	geo.indices[9] = 6; // second triangle
 	geo.indices[10] = 7;
 	geo.indices[11] = 4;
-	/*geo.indices[6] = 7;
-	geo.indices[7] = 6;
-	geo.indices[8] = 5;
-	geo.indices[9] = 5;
-	geo.indices[10] = 4;
-	geo.indices[11] = 7;*/
 
 	// Right face
 	geo.indices[12] = 8; // first triangle
