@@ -345,7 +345,17 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		//set the first vector as the default "selected"
 		iterator = 0;
 		objects[iterator]->setSelected(true);
-		emit changeRotationSliderValue(objects[iterator]->getRotationDegreesY()-180);
+		//SET INITIAL SLIDER VALUES
+		int temp = (int)objects[iterator]->getScalingX();
+		if(temp > 10) temp = 10;
+		emit changeScalingXSliderValue(temp*10);
+		temp = (int)objects[iterator]->getScalingY();
+		if(temp > 10) temp = 10;
+		emit changeScalingYSliderValue(temp*10);
+		temp = (int)objects[iterator]->getScalingZ();
+		if(temp > 10) temp = 10;
+		emit changeScalingZSliderValue(temp*10);
+
 	}
 	catch(std::ifstream::failure)
 	{
@@ -430,6 +440,18 @@ void MyGLWidget::nextObject()
 	if(iterator > objects.size()-1) iterator = 0;
 	objects[iterator]->setSelected(true);
 	emit changeRotationSliderValue(objects[iterator]->getRotationDegreesY()-180);
+
+	//MAKE SURE TO CLAMP TO 10 for slider
+	int temp = (int)objects[iterator]->getScalingX();
+	if(temp > 10) temp = 10;
+	emit changeScalingXSliderValue(temp*10);
+	temp = (int)objects[iterator]->getScalingY();
+	if(temp > 10) temp = 10;
+	emit changeScalingYSliderValue(temp*10);
+	temp = (int)objects[iterator]->getScalingZ();
+	if(temp > 10) temp = 10;
+	emit changeScalingZSliderValue(temp*10);
+
 	repaint();
 }
 
@@ -441,6 +463,18 @@ void MyGLWidget::previousObject()
 		iterator = objects.size()-1;
 	objects[iterator]->setSelected(true);
 	emit changeRotationSliderValue(objects[iterator]->getRotationDegreesY()-180);
+	
+	//MAKE SURE TO CLAMP TO 10 for slider
+	int temp = (int)objects[iterator]->getScalingX();
+	if(temp > 10) temp = 10;
+	emit changeScalingXSliderValue(temp*10);
+	temp = (int)objects[iterator]->getScalingY();
+	if(temp > 10) temp = 10;
+	emit changeScalingYSliderValue(temp*10);
+	temp = (int)objects[iterator]->getScalingZ();
+	if(temp > 10) temp = 10;
+	emit changeScalingZSliderValue(temp*10);
+
 	repaint();
 }
 
@@ -448,6 +482,51 @@ void MyGLWidget::changeRotationDegrees(int r)
 {
 	objects[iterator]->setRotationDegreesY(r+180);
 }
+
+void MyGLWidget::changeScalingX(int s)
+{
+	objects[iterator]->setScalingX(s/10);
+}
+void MyGLWidget::changeScalingY(int s)
+{
+	objects[iterator]->setScalingY(s/10);
+}
+void MyGLWidget::changeScalingZ(int s)
+{
+	objects[iterator]->setScalingZ(s/10);
+}
+
+void MyGLWidget::plusTranslationX()
+{
+	float temp = objects[iterator]->getTranslationX();
+	objects[iterator]->setTranslationX(temp+1.0f);
+}
+void MyGLWidget::minusTranslationX()
+{
+	float temp = objects[iterator]->getTranslationX();
+	objects[iterator]->setTranslationX(temp-1.0f);
+}
+void MyGLWidget::plusTranslationY()
+{
+	float temp = objects[iterator]->getTranslationY();
+	objects[iterator]->setTranslationY(temp+1.0f);
+}
+void MyGLWidget::minusTranslationY()
+{
+	float temp = objects[iterator]->getTranslationY();
+	objects[iterator]->setTranslationY(temp-1.0f);
+}
+void MyGLWidget::plusTranslationZ()
+{
+	float temp = objects[iterator]->getTranslationZ();
+	objects[iterator]->setTranslationZ(temp+1.0f);
+}
+void MyGLWidget::minusTranslationZ()
+{
+	float temp = objects[iterator]->getTranslationZ();
+	objects[iterator]->setTranslationZ(temp-1.0f);
+}
+
 
 void MyGLWidget::parseGeometryDescription(Mesh &mesh, std::string filename)
 {

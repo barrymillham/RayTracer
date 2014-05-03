@@ -128,6 +128,19 @@ public:
 		bool getSelected() {return selected;}
 		int getRotationDegreesY() {return rotations.y;}
 		void setRotationDegreesY(int r) {rotations.y = r;}
+		float getScalingX() {return scalings.x;}
+		void setScalingX(float s) {scalings.x = s;}
+		float getScalingY() {return scalings.y;}
+		void setScalingY(float s) {scalings.y = s;}
+		float getScalingZ() {return scalings.z;}
+		void setScalingZ(float s) {scalings.z = s;}
+		float getTranslationX() {return translations.x;}
+		void setTranslationX(float t) {translations.x = t;}
+		float getTranslationY() {return translations.y;}
+		void setTranslationY(float t) {translations.y = t;}
+		float getTranslationZ() {return translations.z;}
+		void setTranslationZ(float t) {translations.z = t;}
+
 
 	private:
 		AbstractGeometryItem *geo; // null if this is a transformation-only node
