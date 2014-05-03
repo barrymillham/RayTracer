@@ -481,50 +481,60 @@ void MyGLWidget::previousObject()
 void MyGLWidget::changeRotationDegrees(int r)
 {
 	objects[iterator]->setRotationDegreesY(r+180);
+	update();
 }
 
 void MyGLWidget::changeScalingX(int s)
 {
 	objects[iterator]->setScalingX(s/10);
+	update();
 }
 void MyGLWidget::changeScalingY(int s)
 {
 	objects[iterator]->setScalingY(s/10);
+	update();
 }
 void MyGLWidget::changeScalingZ(int s)
 {
 	objects[iterator]->setScalingZ(s/10);
+	update();
 }
 
 void MyGLWidget::plusTranslationX()
 {
 	float temp = objects[iterator]->getTranslationX();
 	objects[iterator]->setTranslationX(temp+1.0f);
+	update();
 }
 void MyGLWidget::minusTranslationX()
 {
 	float temp = objects[iterator]->getTranslationX();
 	objects[iterator]->setTranslationX(temp-1.0f);
+	update();
 }
 void MyGLWidget::plusTranslationY()
 {
 	float temp = objects[iterator]->getTranslationY();
 	objects[iterator]->setTranslationY(temp+1.0f);
+	update();
 }
 void MyGLWidget::minusTranslationY()
 {
 	float temp = objects[iterator]->getTranslationY();
 	objects[iterator]->setTranslationY(temp-1.0f);
+	update();
 }
 void MyGLWidget::plusTranslationZ()
 {
 	float temp = objects[iterator]->getTranslationZ();
 	objects[iterator]->setTranslationZ(temp+1.0f);
+	update();
 }
 void MyGLWidget::minusTranslationZ()
 {
 	float temp = objects[iterator]->getTranslationZ();
 	objects[iterator]->setTranslationZ(temp-1.0f);
+	update();
 }
 
 
