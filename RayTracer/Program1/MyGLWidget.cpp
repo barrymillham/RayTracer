@@ -211,7 +211,7 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		mat4 floorScale = glm::scale(mat4(1.0f), vec3((float)floorXSize, 0.1f, (float)floorZSize));
 		mat4 floorTransform = scene_rotz * scene_roty * scene_rotx * scene_scale * floorScale;*/
 		//construct vectors to store transformation values in node
-		SceneGraph::Node *floor = new SceneGraph::Node(&greenBox, vec3(0,0,0), vec3(0,0,0), vec3(2,2,2));
+		SceneGraph::Node *floor = new SceneGraph::Node(&greenBox, vec3(0,0,0), vec3(0,0,0), vec3(2*(float)floorXSize,2*0.1f,2*(float)floorZSize));
 		// But, we need to send up the camera matrix as a root node above the floor, so make the floor a child of that.
 		//SceneGraph::Node *root = new SceneGraph::Node(0, camera);
 		//scene.addChildToHead(root);
@@ -224,7 +224,7 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		//floorTransform = glm::inverse(floorScale) * floorTransform;
 		mat4 onFloor_trans = glm::translate(mat4(1.0f), vec3(0,0.55f,0));
 		//SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, glm::inverse(floorScale) * onFloor_trans);
-		SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, vec3(0,0,0), vec3(0,0,0), vec3(.5, .5, .5));
+		SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, vec3(0,0,0), vec3(0,0,0), vec3(1/(2*(float)floorXSize), .2*.55, 1/(2*(float)floorZSize)));
 		floor->addChild(furnitureRoot);
 
 
