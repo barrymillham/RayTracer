@@ -148,7 +148,8 @@ public:
 	// The rest of the tree is attached to this node. (see addChildToHead())
 	SceneGraph()
 	{
-		head = new Node(0, mat4(1.0f)); // null geometry, identity matrix
+		//head = new Node(0, mat4(1.0f)); // null geometry, identity matrix
+		head = new Node(0, vec3(0,0,0), vec3(0,0,0), vec3(1,1,1)); // null geometry, identity transformations
 	}
 
 	// Destructor
@@ -163,7 +164,7 @@ public:
 	void clear()
 	{
 		delete head;
-		head = new Node(0, mat4(1.0f));
+		head = new Node(0, vec3(0,0,0), vec3(0,0,0), vec3(1,1,1)); // null geometry, identity transformations
 	}
 
 	// Adds a child of the head of the scene graph.

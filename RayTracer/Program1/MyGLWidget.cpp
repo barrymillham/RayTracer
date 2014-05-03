@@ -14,8 +14,6 @@ AttribLocations attribs;
 
 MyGLWidget::MyGLWidget(QWidget* parent) : QGLWidget(parent) {
 	iterator = 0;
-	objects[iterator]->setSelected(true);
-	emit changeRotationSliderValue(objects[iterator]->getRotationDegreesY()-180);
 }
 
 MyGLWidget::~MyGLWidget() {
@@ -345,8 +343,9 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		delete [] stackingItems;
 
 		//set the first vector as the default "selected"
-		objects[0]->setSelected(true);
 		iterator = 0;
+		objects[iterator]->setSelected(true);
+		emit changeRotationSliderValue(objects[iterator]->getRotationDegreesY()-180);
 	}
 	catch(std::ifstream::failure)
 	{
