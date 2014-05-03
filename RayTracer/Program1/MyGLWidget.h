@@ -62,6 +62,10 @@ public slots:
 	void lightZDec();
 	void nextObject();
 	void previousObject();
+	void changeRotationDegrees(int);
+
+signals:
+	void changeRotationSliderValue(int);
 
 private:
 	unsigned int vertexShader;

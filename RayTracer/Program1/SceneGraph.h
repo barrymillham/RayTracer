@@ -35,7 +35,9 @@ public:
 		//		If not null, the pointer is expected to remain valid for the life of
 		//		the Node (i.e. memory management is the caller's responsibility).
 		// transform: transformation matrix for this node
-		Node(AbstractGeometryItem *geo, mat4 transform) : geo(geo), transform(transform)
+
+		//Node(AbstractGeometryItem *geo, mat4 transform) : geo(geo), transform(transform)
+		Node(AbstractGeometryItem *geo, vec3 r, vec3 t, vec3 s) : geo(geo), rotations(r), translations(t), scalings(s)
 		{ 
 			selected = false;
 			
@@ -70,9 +72,19 @@ public:
 		//		on to its children in similar fashion
 		void draw(mat4 parentTransform)
 		{
+			//construct temporary matrix using stored values
+			//DOING IT THIS WAY MIGHT CAUSE PROBLEMS (says Ethan)
+			mat4 transform(1.0f);
+			glm::scale(transform, scalings);
+			glm::rotate(transform, rotations.x, vec3(1,0,0));
+			glm::rotate(transform, rotations.y, vec3(0,1,0));
+			glm::rotate(transform, rotations.z, vec3(0,0,1));
+			glm::translate(transform, translations);
+			
 			mat4 composition = parentTransform * transform;
+
 			if(geo)
-			{
+			{			
 				if(selected)
 				{
 					glUniform1i(attribs.u_ambientOnly, 1);
@@ -86,7 +98,7 @@ public:
 				children[i]->draw(composition);
 		}
 
-		void rotateX(float degrees)
+		/*void rotateX(float degrees)
 		{
 			mat4 rotationMatrix = glm::rotate(mat4(1.0f), degrees, vec3(1,0,0));
 			transform *= rotationMatrix;
@@ -110,17 +122,25 @@ public:
 		{
 			mat4 scaleMatrix = glm::scale(mat4(1.0f), scalar);
 			transform *= scaleMatrix;
-		}
+		}*/
 
 		void setSelected(bool s) {selected = s;}
 		bool getSelected() {return selected;}
+		int getRotationDegreesY() {return rotations.y;}
+		void setRotationDegreesY(int r) {rotations.y = r;}
 
 	private:
 		AbstractGeometryItem *geo; // null if this is a transformation-only node
-		mat4 transform;
+		//mat4 transform;
 		std::vector<Node*> children; // empty if this is a leaf
 		bool selected;
 		float yTrans;
+
+		//values modified by UI sliders
+		//int rotationDegrees;
+		vec3 rotations;
+		vec3 translations;
+		vec3 scalings;
 	};
 
 	// Constructor
