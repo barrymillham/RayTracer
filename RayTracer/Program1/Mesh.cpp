@@ -54,3 +54,70 @@ void Mesh::fillIndexBuffer(std::vector<unsigned> &indexBuffer)
 		} while(he != faces[i].halfEdge); // loop until we've gone around to the halfedge we started at
 	}
 }
+
+void Mesh::bufferData(AttribLocations attribs)
+{
+	Mesh::attribs = attribs; // we don't actually need these in this function, but it's a good place to get it from upstream for later use in draw()
+
+	// Delete old VBOs if we have something previously loaded
+	if(buffered)
+	{
+		glDeleteBuffers(1, &vbo);
+		glDeleteBuffers(1, &nbo);
+		glDeleteBuffers(1, &ibo);
+	}
+
+	// Create "raw data" buffers based on the data stored in our half-edge structure
+	std::vector<vec3> positions;
+	for(int i = 0; i < vertices.size(); i++)
+		positions.push_back(vertices[i].pos);
+
+	std::vector<vec3> normals;
+	for(int i = 0; i < vertices.size(); i++)
+		normals.push_back(vertices[i].getNormal());
+
+	fillIndexBuffer(indices); // note: fillIndexBuffer() automatically clears anything previously left in indices, which is what we want
+
+	// Generate and fill new buffers
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, positions.size()*sizeof(vec3), positions.data(), GL_STATIC_DRAW);
+
+	glGenBuffers(1, &nbo);
+	glBindBuffer(GL_ARRAY_BUFFER, nbo);
+	glBufferData(GL_ARRAY_BUFFER, normals.size()*sizeof(vec3), normals.data(), GL_STATIC_DRAW);
+
+	glGenBuffers(1, &ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(unsigned), indices.data(), GL_STATIC_DRAW);
+
+	buffered = true;
+}
+
+void Mesh::draw(mat4 transform)
+{
+	if(!buffered)
+	{
+		MeshException e;
+		e.reason = "Mesh: must call bufferData() before drawing!";
+		throw e;
+	}
+
+	// Bind the shader's attribute pointers to the VBOs used by this mesh
+	// (we need to do this here for multiple meshes, and other geometry objects, to coexist)
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glEnableVertexAttribArray(attribs.v_pos);
+	glVertexAttribPointer(attribs.v_pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, nbo);
+	glEnableVertexAttribArray(attribs.v_normal);
+	glVertexAttribPointer(attribs.v_normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Send the model matrix, and a color for the mesh, to the GPU as uniforms
+	glUniformMatrix4fv(attribs.u_model, 1, GL_FALSE, &(mat4(1.0f))[0][0]);
+	glUniform3f(attribs.u_color, 1.0f, 0.0f, 0.0f); // set color to red (TODO: don't hardcode this)
+	//glUniform1i(attribs.u_ambientOnly, 1); // turn off advanced lighting (for debugging - comment out under normal circumstances)
+			
+	// Draw the mesh
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+}

@@ -374,8 +374,8 @@ void MyGLWidget::changeLeftRightAngle(int angle)
 
 void MyGLWidget::loadNewScene(QString text)
 {
-	//parseSceneDescription(scene, text.toStdString());
-	parseGeometryDescription(mesh, text.toStdString());
+	parseSceneDescription(scene, text.toStdString());
+	//parseGeometryDescription(mesh, text.toStdString());
 	zoom = 0;
 	upDownAngle = 0;
 	leftRightAngle = 0;
@@ -438,184 +438,185 @@ void MyGLWidget::previousObject()
 	repaint();
 }
 
-void MyGLWidget::parseGeometryDescription(Mesh &mesh, std::string filename)
-{
-	mesh.clear();
-
-	// Read in the polygon description from file
-	std::ifstream inputFile(filename);
-
-	std::string procedureType;
-	inputFile >> procedureType;
-
-	if(procedureType == "extrusion")
-	{
-		float height;
-		int numPoints;
-
-		inputFile >> height >> numPoints;
-
-		std::vector<vec3> polygonPoints;
-		for(int i = 0; i < numPoints - 1; i++) // Note: loops one less time to skip repeated first point at end of input
-		{
-			vec3 loc, normal(0,1,0);
-		
-			inputFile >> loc.x >> loc.z;
-			loc.y = 0.0f;
-
-			polygonPoints.push_back(loc);
-		}
-
-		// Test for convexity; if the polygon is convex, build an index buffer based on its triangulation
-		if(polygonPoints.size() < 3)
-			return; // our algorithm won't work unless there are at least 3 points - there should be, if the input was correct
-
-		bool isConvex = true;
-		// Find vertex 0's normal
-		vec3 n = glm::cross(polygonPoints[1] - polygonPoints[0], polygonPoints[polygonPoints.size()-1] - polygonPoints[0]);
-		// Find the normal for each of the other vertices; if it's opposite v0's, the polygon is non-convex.
-		// While we're at it, add up the number of points with positive and negative normals (in the y dimension) -
-		// that'll tell us the winding order by which the polygon was specified in the input file.
-		int numPositiveNormals = 0;
-		for(int i = 1; i < polygonPoints.size(); i++)
-		{
-			int next = (i+1) % polygonPoints.size();
-			vec3 t = glm::cross(polygonPoints[next] - polygonPoints[i], polygonPoints[i-1] - polygonPoints[i]);
-			vec3 x = glm::normalize(t);
-			vec3 y = glm::normalize(-n);
-			if(x == y)
-				isConvex = false;
-			if(x.y == 1)
-				numPositiveNormals++;
-		}
-
-		if(isConvex)
-			isConvex = true;
-		else
-			isConvex = false;
-
-		// If convex, triangulate the polygon into faces and add it to the mesh (twice, once for each endcap)
-		if(isConvex)
-		{
-			for(int i = 1; i < polygonPoints.size() - 1; i++)
-			{
-				Mesh::Face face;
-				face.p0 = polygonPoints[0];
-				face.p1 = polygonPoints[i];
-				face.p2 = polygonPoints[(i+1) % polygonPoints.size()];
-				face.normal = vec3(0,-1,0);
-
-				mesh.addFace(face);
-				
-				face.p0.y += height;
-				face.p1.y += height;
-				face.p2.y += height;
-				face.normal.y = 1;
-
-				mesh.addFace(face);
-			}
-		}
-
-		// Triangulate the sides into faces and add them to the mesh
-		for(int i = 0; i < polygonPoints.size(); i++)
-		{
-			Mesh::Face face;
-
-			// First triangle: bottom[i], top[i], top[i+1]
-			face.p0 = face.p1 = polygonPoints[i];
-			face.p1.y += height;
-			face.p2 = polygonPoints[(i+1) % polygonPoints.size()];
-			face.p2.y += height;
-			if(numPositiveNormals > polygonPoints.size() - numPositiveNormals)
-				face.normal = glm::normalize(glm::cross(face.p0 - face.p1, face.p2 - face.p1));
-			else
-				face.normal = glm::normalize(glm::cross(face.p2 - face.p1, face.p0 - face.p1));
-			mesh.addFace(face);
-
-			Mesh::Face face2;
-
-			// Second triangle: top[i+1], bottom[i+1], bottom[i]
-			face2.p0 = face2.p1 = polygonPoints[(i+1) % polygonPoints.size()];
-			face2.p0.y += height;
-			face2.p2 = polygonPoints[i];
-			if(numPositiveNormals > polygonPoints.size() - numPositiveNormals)
-				face2.normal = glm::normalize(glm::cross(face2.p0 - face2.p1, face2.p2 - face2.p1));
-			else
-				face2.normal = glm::normalize(glm::cross(face2.p2 - face2.p1, face2.p0 - face2.p1));
-			mesh.addFace(face2);
-		}
-	}
-	else if(procedureType == "surfrev")
-	{
-		int numSlices;
-		int numPoints;
-
-		inputFile >> numSlices >> numPoints;
-
-		// numSlices must be at least 3, or the mesh will be flat - we don't want this
-		if(numSlices < 3)
-			return;
-
-		std::vector<vec3> polygonPoints;
-		for(int i = 0; i < numPoints; i++)
-		{
-			vec3 loc, normal(0,1,0);
-		
-			inputFile >> loc.x >> loc.y;
-			loc.z = 0.0f;
-
-			// x-coordinates may not be negative - clamp to [0, inf.)
-			if(loc.x < 0)
-				loc.x = 0;
-
-			polygonPoints.push_back(loc);
-		}
-
-		// Check if the polyline ends at the y-axis (on both ends) - if not, we'll need to add additional point(s) with x=0 to cap it off
-		if(polygonPoints[0].x != 0.0f)
-			polygonPoints.insert(polygonPoints.begin(), vec3(0, polygonPoints[0].y, 0));
-		if(polygonPoints[polygonPoints.size() - 1].x != 0.0f)
-			polygonPoints.push_back(vec3(0, polygonPoints[polygonPoints.size() - 1].y, 0));
-
-		// Perform the rotation
-		int sliceSize = 360 / numSlices;
-		for(int i = 0; i < 360; i += sliceSize)
-		{
-			// If this is the last slice, make sure we don't overshoot past 360 degrees
-			// Note: the "yes" case was erroneously "i - 360" when I turned this in; it didn't cause problems for the two sample cases
-			// included with the assignment, but will cause problems in the general case.
-			int thisSlice = (i + sliceSize > 360) ? 360 - i : sliceSize;
-
-			// Determine the rotated points on the polyline for the beginning and end of this slice
-			std::vector<vec4> begin, end;
-			for(int j = 0; j < polygonPoints.size(); j++)
-			{
-				// These were wrong in the turned-in version too - I had i*sliceSize instead of i in the next two lines
-				begin.push_back(glm::rotate(mat4(1.0f), (float)(i), vec3(0,1,0)) * vec4(polygonPoints[j], 1));
-				end.push_back(glm::rotate(mat4(1.0f), (float)(i + thisSlice), vec3(0,1,0)) * vec4(polygonPoints[j], 1));
-			}
-
-			// Triangulate the side of this slice and add the resultant faces to the mesh
-			for(int j = 0; j < polygonPoints.size() - 1; j++)
-			{
-				Mesh::Face face;
-
-				// First triangle
-				face.p0 = vec3(begin[j]);
-				face.p1 = vec3(begin[j+1]);
-				face.p2 = vec3(end[j+1]);
-				face.normal = glm::normalize(glm::cross(face.p0 - face.p1, face.p2 - face.p1));
-				mesh.addFace(face);
-
-				// Second triangle
-				face.p0 = vec3(end[j+1]);
-				face.p1 = vec3(end[j]);
-				face.p2 = vec3(begin[j]);
-				face.normal = glm::normalize(glm::cross(face.p0 - face.p1, face.p2 - face.p1));
-				mesh.addFace(face);
-			}
-		}
-	}
-
-	mesh.bufferData(attribs);
-}
+// **** NOTE: needs to be updated for half-edge structure (commented out in the meantime because it won't compile)
+//void MyGLWidget::parseGeometryDescription(Mesh &mesh, std::string filename)
+//{
+//	mesh.clear();
+//
+//	// Read in the polygon description from file
+//	std::ifstream inputFile(filename);
+//
+//	std::string procedureType;
+//	inputFile >> procedureType;
+//
+//	if(procedureType == "extrusion")
+//	{
+//		float height;
+//		int numPoints;
+//
+//		inputFile >> height >> numPoints;
+//
+//		std::vector<vec3> polygonPoints;
+//		for(int i = 0; i < numPoints - 1; i++) // Note: loops one less time to skip repeated first point at end of input
+//		{
+//			vec3 loc, normal(0,1,0);
+//		
+//			inputFile >> loc.x >> loc.z;
+//			loc.y = 0.0f;
+//
+//			polygonPoints.push_back(loc);
+//		}
+//
+//		// Test for convexity; if the polygon is convex, build an index buffer based on its triangulation
+//		if(polygonPoints.size() < 3)
+//			return; // our algorithm won't work unless there are at least 3 points - there should be, if the input was correct
+//
+//		bool isConvex = true;
+//		// Find vertex 0's normal
+//		vec3 n = glm::cross(polygonPoints[1] - polygonPoints[0], polygonPoints[polygonPoints.size()-1] - polygonPoints[0]);
+//		// Find the normal for each of the other vertices; if it's opposite v0's, the polygon is non-convex.
+//		// While we're at it, add up the number of points with positive and negative normals (in the y dimension) -
+//		// that'll tell us the winding order by which the polygon was specified in the input file.
+//		int numPositiveNormals = 0;
+//		for(int i = 1; i < polygonPoints.size(); i++)
+//		{
+//			int next = (i+1) % polygonPoints.size();
+//			vec3 t = glm::cross(polygonPoints[next] - polygonPoints[i], polygonPoints[i-1] - polygonPoints[i]);
+//			vec3 x = glm::normalize(t);
+//			vec3 y = glm::normalize(-n);
+//			if(x == y)
+//				isConvex = false;
+//			if(x.y == 1)
+//				numPositiveNormals++;
+//		}
+//
+//		if(isConvex)
+//			isConvex = true;
+//		else
+//			isConvex = false;
+//
+//		// If convex, triangulate the polygon into faces and add it to the mesh (twice, once for each endcap)
+//		if(isConvex)
+//		{
+//			for(int i = 1; i < polygonPoints.size() - 1; i++)
+//			{
+//				Mesh::Face face;
+//				face.p0 = polygonPoints[0];
+//				face.p1 = polygonPoints[i];
+//				face.p2 = polygonPoints[(i+1) % polygonPoints.size()];
+//				face.normal = vec3(0,-1,0);
+//
+//				mesh.addFace(face);
+//				
+//				face.p0.y += height;
+//				face.p1.y += height;
+//				face.p2.y += height;
+//				face.normal.y = 1;
+//
+//				mesh.addFace(face);
+//			}
+//		}
+//
+//		// Triangulate the sides into faces and add them to the mesh
+//		for(int i = 0; i < polygonPoints.size(); i++)
+//		{
+//			Mesh::Face face;
+//
+//			// First triangle: bottom[i], top[i], top[i+1]
+//			face.p0 = face.p1 = polygonPoints[i];
+//			face.p1.y += height;
+//			face.p2 = polygonPoints[(i+1) % polygonPoints.size()];
+//			face.p2.y += height;
+//			if(numPositiveNormals > polygonPoints.size() - numPositiveNormals)
+//				face.normal = glm::normalize(glm::cross(face.p0 - face.p1, face.p2 - face.p1));
+//			else
+//				face.normal = glm::normalize(glm::cross(face.p2 - face.p1, face.p0 - face.p1));
+//			mesh.addFace(face);
+//
+//			Mesh::Face face2;
+//
+//			// Second triangle: top[i+1], bottom[i+1], bottom[i]
+//			face2.p0 = face2.p1 = polygonPoints[(i+1) % polygonPoints.size()];
+//			face2.p0.y += height;
+//			face2.p2 = polygonPoints[i];
+//			if(numPositiveNormals > polygonPoints.size() - numPositiveNormals)
+//				face2.normal = glm::normalize(glm::cross(face2.p0 - face2.p1, face2.p2 - face2.p1));
+//			else
+//				face2.normal = glm::normalize(glm::cross(face2.p2 - face2.p1, face2.p0 - face2.p1));
+//			mesh.addFace(face2);
+//		}
+//	}
+//	else if(procedureType == "surfrev")
+//	{
+//		int numSlices;
+//		int numPoints;
+//
+//		inputFile >> numSlices >> numPoints;
+//
+//		// numSlices must be at least 3, or the mesh will be flat - we don't want this
+//		if(numSlices < 3)
+//			return;
+//
+//		std::vector<vec3> polygonPoints;
+//		for(int i = 0; i < numPoints; i++)
+//		{
+//			vec3 loc, normal(0,1,0);
+//		
+//			inputFile >> loc.x >> loc.y;
+//			loc.z = 0.0f;
+//
+//			// x-coordinates may not be negative - clamp to [0, inf.)
+//			if(loc.x < 0)
+//				loc.x = 0;
+//
+//			polygonPoints.push_back(loc);
+//		}
+//
+//		// Check if the polyline ends at the y-axis (on both ends) - if not, we'll need to add additional point(s) with x=0 to cap it off
+//		if(polygonPoints[0].x != 0.0f)
+//			polygonPoints.insert(polygonPoints.begin(), vec3(0, polygonPoints[0].y, 0));
+//		if(polygonPoints[polygonPoints.size() - 1].x != 0.0f)
+//			polygonPoints.push_back(vec3(0, polygonPoints[polygonPoints.size() - 1].y, 0));
+//
+//		// Perform the rotation
+//		int sliceSize = 360 / numSlices;
+//		for(int i = 0; i < 360; i += sliceSize)
+//		{
+//			// If this is the last slice, make sure we don't overshoot past 360 degrees
+//			// Note: the "yes" case was erroneously "i - 360" when I turned this in; it didn't cause problems for the two sample cases
+//			// included with the assignment, but will cause problems in the general case.
+//			int thisSlice = (i + sliceSize > 360) ? 360 - i : sliceSize;
+//
+//			// Determine the rotated points on the polyline for the beginning and end of this slice
+//			std::vector<vec4> begin, end;
+//			for(int j = 0; j < polygonPoints.size(); j++)
+//			{
+//				// These were wrong in the turned-in version too - I had i*sliceSize instead of i in the next two lines
+//				begin.push_back(glm::rotate(mat4(1.0f), (float)(i), vec3(0,1,0)) * vec4(polygonPoints[j], 1));
+//				end.push_back(glm::rotate(mat4(1.0f), (float)(i + thisSlice), vec3(0,1,0)) * vec4(polygonPoints[j], 1));
+//			}
+//
+//			// Triangulate the side of this slice and add the resultant faces to the mesh
+//			for(int j = 0; j < polygonPoints.size() - 1; j++)
+//			{
+//				Mesh::Face face;
+//
+//				// First triangle
+//				face.p0 = vec3(begin[j]);
+//				face.p1 = vec3(begin[j+1]);
+//				face.p2 = vec3(end[j+1]);
+//				face.normal = glm::normalize(glm::cross(face.p0 - face.p1, face.p2 - face.p1));
+//				mesh.addFace(face);
+//
+//				// Second triangle
+//				face.p0 = vec3(end[j+1]);
+//				face.p1 = vec3(end[j]);
+//				face.p2 = vec3(begin[j]);
+//				face.normal = glm::normalize(glm::cross(face.p0 - face.p1, face.p2 - face.p1));
+//				mesh.addFace(face);
+//			}
+//		}
+//	}
+//
+//	mesh.bufferData(attribs);
+//}
