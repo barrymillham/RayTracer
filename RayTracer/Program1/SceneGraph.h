@@ -73,13 +73,13 @@ public:
 		void draw(mat4 parentTransform)
 		{
 			//construct temporary matrix using stored values
-			//DOING IT THIS WAY MIGHT CAUSE PROBLEMS (says Ethan)
-			mat4 transform(1.0f);
-			glm::scale(transform, scalings);
-			glm::rotate(transform, rotations.x, vec3(1,0,0));
-			glm::rotate(transform, rotations.y, vec3(0,1,0));
-			glm::rotate(transform, rotations.z, vec3(0,0,1));
-			glm::translate(transform, translations);
+			mat4 scaleMat = glm::scale(mat4(1.0f), scalings);
+			mat4 rotXMat = glm::rotate(mat4(1.0f), rotations.x, vec3(1,0,0));
+			mat4 rotYMat = glm::rotate(mat4(1.0f), rotations.y, vec3(0,1,0));
+			mat4 rotZMat = glm::rotate(mat4(1.0f), rotations.z, vec3(0,0,1));
+			mat4 transMat = glm::translate(mat4(1.0f), translations);
+
+			mat4 transform = transMat * rotZMat * rotYMat * rotXMat * scaleMat;
 			
 			mat4 composition = parentTransform * transform;
 
