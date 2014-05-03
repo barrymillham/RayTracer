@@ -25,6 +25,7 @@ public:
 	void initialize(vec3 tableColor)
 	{
 		box.initialize(tableColor);
+		height = 1.2; // the leg yScale is 1.0, the tabletop yScale is 0.2, so table height = 1.2 (cube height = 1);
 	}
 
 	// Pure virtual function inherited from AbstractGeometryItem

@@ -290,8 +290,19 @@
   <ItemGroup>
     <None Include="color_xforms.frag" />
     <None Include="color_xforms.vert" />
+    <None Include="extrusion1.dat" />
+    <None Include="extrusion2.dat" />
     <None Include="lambert.frag" />
     <None Include="lambert.vert" />
+    <None Include="surfrev1.dat" />
+    <None Include="surfrev2.dat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="scene0.txt" />
+    <Text Include="scene1.txt" />
+    <Text Include="scene2.txt" />
+    <Text Include="scene3.txt" />
+    <Text Include="testScene.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

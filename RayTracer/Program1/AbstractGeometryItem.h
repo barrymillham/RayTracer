@@ -21,8 +21,26 @@ class AbstractGeometryItem
 {
 public:
 	virtual void draw(glm::mat4 transform) = 0;
-	virtual float getHeight() {return height;}
+	
 	virtual void setHeight(float h) {height = h;}
+	virtual float getHeight() {return height;}
+	
+	virtual void setYScale(float y) {yScale = y;}
+	virtual float getYScale() {return yScale;}
+
+	virtual void setXScale(float x) {xScale = x;}
+	virtual float getXScale() {return xScale;}
+
+	virtual void setZScale(float z) {zScale = z;}
+	virtual float getZScale() {return zScale;}
+
+	virtual void setRotation(float r) {rotation = r;}
+	virtual float getRotation() {return rotation;}
+
 protected: 
 	float height;
+	float xScale;
+	float yScale;
+	float zScale;
+	float rotation;
 };

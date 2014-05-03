@@ -32,7 +32,7 @@ public:
 
 	// Default constructor - nothing to see here, move along people
 	Box() : initialized(false)
-	{ height = 1;}
+	{ }
 
 	// Instantiates point, color, and index arrays, and initializes the base class.
 	void initialize(vec3 boxColor);

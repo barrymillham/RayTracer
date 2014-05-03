@@ -140,5 +140,34 @@
     <None Include="lambert.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="extrusion1.dat">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="extrusion2.dat">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="surfrev1.dat">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="surfrev2.dat">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="scene0.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="scene1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="scene2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="scene3.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="testScene.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -19,8 +19,7 @@ unsigned int Box::uShaderColorPointer;
 void Box::staticInitialize(AttribLocations attribs)
 {
 	// If already initialized, don't do so again
-	if(staticInitialized)
-		return;
+	if(staticInitialized) return;
 
 	Box::uShaderColorPointer = attribs.u_color;
 
@@ -127,10 +126,10 @@ void Box::staticInitialize(AttribLocations attribs)
 void Box::initialize(vec3 boxColor)
 {
 	// If already initialized, don't do so again
-	if(initialized)
-		return;
+	if(initialized)	return;
 
 	Box::boxColor = boxColor;
+	height = 1;
 
 	initialized = true;
 }

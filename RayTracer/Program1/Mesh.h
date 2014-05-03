@@ -38,7 +38,6 @@ public:
 		Face() // also to be removed once half-edge is fully implemented
 		{ }
 
-
 		vec3 normal;
 
 		HalfEdge *halfEdge;
@@ -152,7 +151,7 @@ public:
 	void bufferData(AttribLocations attribs)
 	{
 		Mesh::attribs = attribs;
-
+		
 		// Delete old VBOs if we have something previously loaded
 		if(buffered)
 		{
@@ -237,6 +236,6 @@ private:
 
 	bool buffered;
 	AttribLocations attribs;
-
+	float height;
 	unsigned vbo, nbo, ibo;
 };

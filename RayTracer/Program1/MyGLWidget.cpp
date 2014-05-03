@@ -168,11 +168,16 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 	
 	//The way stacking works: 
 	/*
-	The yScale of each piece of geometry is recorded as that geometry's height.
+	The yScale of each piece of geometry is recorded as that geometry's yScale.
 	That geometry is given to a SceneGraph Node which is then added as a child
 		to furnitureRoot. 
 	FurnitureRoot is a childNode of floor.
 	Floor is a child of Scene, which is a member of MyGlWidget.
+	An object itself shouldn't know it's height. In local space, an object only knows it's size.
+	We should set an objects yTransformation out here in Paint (or in this func) where we can see the location of all 
+		the objects. If we see that an object is over another object, we should set its yTrans
+		equal to it's parent's yTrans + it's parent's scaled height.
+
 
 	//Drawing:
 	Then, when you call scene.draw(), it calls head->draw() (Where head is the topmost node)
@@ -183,7 +188,6 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 	That draw function will transform a box into whatever position it needs to be in in local 
 		space and then call the most basic Draw() function (member of GeometryItem), which
 		takes the VBO, NBO and IBO into account and sends all the information into the shader.
-
 	*/
 
 	
@@ -223,6 +227,7 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		//floorTransform = glm::inverse(floorScale) * floorTransform;
 		mat4 onFloor_trans = glm::translate(mat4(1.0f), vec3(0,0.55f,0));
 		SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, glm::inverse(floorScale) * onFloor_trans);
+		//furnitureRoot->setYTrans(0.0f); //Don't need to do this because it happens in constructor
 		floor->addChild(furnitureRoot);
 
 
@@ -239,21 +244,16 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		furnitureRoot->addChild(new SceneGraph::Node(&box, rightWall_trans * leftWall_scale));
 */
 		// Read in the furniture from the file and build the scene graph
-		// First off, we need to keep track of what the "stacking level" is at each grid location:
-		float **stackingLevels = new float*[floorXSize];
-		// Likewise, we're going to need another array to keep track of the "top" item at each grid location:
+		// We're going to need another array to keep track of the "top" item at each grid location:
 		SceneGraph::Node ***stackingItems = new SceneGraph::Node**[floorXSize];
 		for(int i = 0; i < floorXSize; i++)
-		{
-			stackingLevels[i] = new float[floorZSize];
 			stackingItems[i] = new SceneGraph::Node*[floorZSize];
-		}
-		// Initialize each grid location's stacking level and item pointer to 0
+
+		// Initialize each grid location's item pointer to 0
 		for(int i = 0; i < floorXSize; i++)
 		{
 			for(int j = 0; j < floorZSize; j++)
 			{
-				stackingLevels[i][j] = 0;
 				stackingItems[i][j] = 0; // null pointer means the grid location is empty
 			}
 		}
@@ -270,55 +270,46 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 
 			AbstractGeometryItem *geo;
 
-			if(type == "box")
-			{
-				geo = &yellowBox;
-				geo->setHeight(yScale); 
-			}
-			else if(type == "chair")
-			{
-				geo = &chair;
-				geo->setHeight(yScale);
-			}
-			else if(type == "table")
-			{
-				geo = &table;
-				geo->setHeight(yScale);
-			}
-			else
-			{
+			if(type == "box") geo = &yellowBox;
+			else if(type == "chair") geo = &chair;
+			else if(type == "table") geo = &table;
+			else {
 				SceneGraphException ex;
 				ex.reason = "SceneGraph: invalid furniture type \"" + type + "\"!";
 				throw ex;
 			}
 
+			geo->setYScale(yScale);
+			geo->setXScale(xScale);
+			geo->setZScale(zScale);
+			geo->setRotation(rotation);
 			
 			// For the translation, first we need to determine where this item's grid position is in world space.
 			// For simplicity, we'll define our grid to be a floorXSize-by-floorZSize "square" in the x-z plane, centered
 			// at the origin. The grid point 0,0 will be at (-floorXSize*.5f, -floorZSize*.5f) in world space.
 			mat4 trans_grid = glm::translate(mat4(1.0f), vec3(-((float)floorXSize)/2.0f + xIndex, 0.0f, -((float)floorZSize)/2.0f + zIndex));
-			// Now, we need to position the item vertically, on top of any previous items in its grid location.
-			mat4 trans_y = glm::translate(mat4(1.0f), vec3(0.0f, stackingLevels[xIndex][zIndex], 0.0f)); // 0.5 is a hardcoded hack, specific to current furniture - need to change this
-			// Rotate and scale
 			mat4 trans_rot = glm::rotate(mat4(1.0f), rotation, vec3(0.0f, 1.0f, 0.0f)); // rotation is about the y-axis
-			mat4 trans_scale = glm::scale(mat4(1.0f), vec3(xScale, yScale, zScale));
-			
-			//stackingLevels[xIndex][zIndex] += itemHeight;
-			stackingLevels[xIndex][zIndex] = 0.0f;
+			mat4 trans_scale = glm::scale(mat4(1.0f), vec3(xScale, yScale, zScale));			
 
 			SceneGraph::Node *thisItem = new SceneGraph::Node(geo, mat4(1.0f));
 
 			// Add the furniture item as a child node of whatever's under it on its grid location.
 			// If there's nothing under it, we will make it a child of the furniture root.
 			//SceneGraph::Node *thisItem = new SceneGraph::Node(geo, trans);
-			if(stackingItems[xIndex][zIndex] == 0)
+			if(stackingItems[xIndex][zIndex] == 0) //If else in this location
 			{
-				mat4 trans = trans_y * trans_grid  * trans_rot * trans_scale;
+				mat4 trans = trans_grid  * trans_rot * trans_scale;
 				thisItem = new SceneGraph::Node(geo, trans);
 				furnitureRoot->addChild(thisItem);
 			}
-			else
+			else //if there's geometry at this spot already.
 			{
+				float parentYTrans = stackingItems[xIndex][zIndex]->getYTrans();
+				float parentHeight = stackingItems[xIndex][zIndex]->getScaledHeight();
+				
+				// There is geometry here, so set the yTranslation equal to parent's height + its yTranslation
+				mat4 trans_y = glm::translate(mat4(1.0f), vec3(0.0f, parentYTrans + parentHeight, 0.0f));
+			
 				mat4 trans = trans_y * trans_rot * trans_scale;
 				thisItem = new SceneGraph::Node(geo, trans);
 				stackingItems[xIndex][zIndex]->addChild(thisItem);
@@ -333,10 +324,10 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		// Free dynamically allocated memory for grid arrays
 		for(int i = 0; i < floorXSize; i++)
 		{
-			delete [] stackingLevels[i];
+			//delete [] stackingLevels[i];
 			delete [] stackingItems[i];
 		}
-		delete [] stackingLevels;
+		//delete [] stackingLevels;
 		delete [] stackingItems;
 
 		//set the first vector as the default "selected"

@@ -25,6 +25,7 @@ public:
 	void initialize(vec3 chairColor)
 	{
 		box.initialize(chairColor);
+		height = 2.2; //chair leg yScale = 1.0, seat yScale = 0.2, back yScale = 1.0, so chair height = 2.2
 	}
 
 	// Pure virtual function inherited from AbstractGeometryItem

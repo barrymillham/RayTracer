@@ -38,9 +38,7 @@ public:
 		Node(AbstractGeometryItem *geo, mat4 transform) : geo(geo), transform(transform)
 		{ 
 			selected = false;
-			
-			//if (geo != NULL) translate(vec3(0.0, geo->getHeight(), 0.0f));
-			yTrans = 0.0;
+			yTrans = 0.0;	
 		}
 
 		~Node() { // Destructor deallocates all child nodes.
@@ -51,8 +49,7 @@ public:
 		// Adds a child of this node.
 		// *** NOTE: any nodes added with this function become the responsibility of
 		// this Node. It will deallocate all children upon destruction.
-		void addChild(Node *child)
-		{
+		void addChild(Node *child) {
 			children.push_back(child);
 		}
 
@@ -63,7 +60,14 @@ public:
 		float getYTrans() {
 			return yTrans;
 		}
-
+		float getScaledHeight() {
+			if (geo != NULL) {
+				return geo->getYScale() * geo->getHeight();
+				//geo->yScale is set when read it's read in from the configuration documents, and geo->height 
+				//	is set in the initialize function of the GeomType.h (based on the yScales of each of the cubes
+				//  that make up the geometry.
+			}
+		}
 		// Draw the node, and all of its child nodes (preorder traversal).
 		// parentTransform: transformation matrix of the parent node, which will
 		//		be composed with this node's transformation for drawing and passed
@@ -84,32 +88,6 @@ public:
 			}
 			for(int i = 0; i < children.size(); i++)
 				children[i]->draw(composition);
-		}
-
-		void rotateX(float degrees)
-		{
-			mat4 rotationMatrix = glm::rotate(mat4(1.0f), degrees, vec3(1,0,0));
-			transform *= rotationMatrix;
-		}
-		void rotateY(float degrees)
-		{
-			mat4 rotationMatrix = glm::rotate(mat4(1.0f), degrees, vec3(0,1,0));
-			transform *= rotationMatrix;
-		}
-		void rotateZ(float degrees)
-		{
-			mat4 rotationMatrix = glm::rotate(mat4(1.0f), degrees, vec3(0,0,1));
-			transform *= rotationMatrix;
-		}
-		void translate(vec3 transVec)
-		{
-			mat4 translationMatrix = glm::translate(mat4(1.0f), transVec); 
-			transform *= translationMatrix;
-		}
-		void scale(vec3 scalar)
-		{
-			mat4 scaleMatrix = glm::scale(mat4(1.0f), scalar);
-			transform *= scaleMatrix;
 		}
 
 		void setSelected(bool s) {selected = s;}
