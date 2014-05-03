@@ -224,7 +224,7 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		//floorTransform = glm::inverse(floorScale) * floorTransform;
 		mat4 onFloor_trans = glm::translate(mat4(1.0f), vec3(0,0.55f,0));
 		//SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, glm::inverse(floorScale) * onFloor_trans);
-		SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, vec3(0,0,0), vec3(0,0,0), vec3(1/(2*(float)floorXSize), .2*.55, 1/(2*(float)floorZSize)));
+		SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, vec3(0,0,0), vec3(0,0.55,0), vec3(1/((float)floorXSize), 1/(0.1f), 1/((float)floorZSize)));
 		floor->addChild(furnitureRoot);
 
 
@@ -304,7 +304,7 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 			//// Rotate and scale
 			//mat4 trans_rot = glm::rotate(mat4(1.0f), rotation, vec3(0.0f, 1.0f, 0.0f)); // rotation is about the y-axis
 			//mat4 trans_scale = glm::scale(mat4(1.0f), vec3(xScale, yScale, zScale));
-			vec3 gridTranslation(-((float)floorXSize)/2.0f + xIndex, 0.0f, -((float)floorZSize)/2.0f + zIndex);
+			vec3 gridTranslation(-((float)floorXSize)/2.0f + xIndex, 0.5f, -((float)floorZSize)/2.0f + zIndex);
 			
 			//stackingLevels[xIndex][zIndex] += itemHeight;
 			stackingLevels[xIndex][zIndex] = 0.0f;
@@ -388,8 +388,8 @@ void MyGLWidget::changeLeftRightAngle(int angle)
 
 void MyGLWidget::loadNewScene(QString text)
 {
-	//parseSceneDescription(scene, text.toStdString());
-	parseGeometryDescription(mesh, text.toStdString());
+	parseSceneDescription(scene, text.toStdString());
+	//parseGeometryDescription(mesh, text.toStdString());
 	zoom = 0;
 	upDownAngle = 0;
 	leftRightAngle = 0;
