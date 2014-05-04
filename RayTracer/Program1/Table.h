@@ -27,7 +27,7 @@ public:
 		box.initialize(tableColor);
 	}
 
-	// Pure virtual function inherited from AbstractGeometryItem
+	// Pure virtual functions inherited from AbstractGeometryItem
 	virtual void draw(mat4 transform)
 	{
 		mat4 top_scale = scale(mat4(1.0f), vec3(1.0f, 0.2f, 1.0f));
@@ -44,6 +44,11 @@ public:
 		box.draw(transform * frontRightLegTrans * legTrans);
 		box.draw(transform * backLeftLegTrans * legTrans);
 		box.draw(transform * backRightLegTrans * legTrans);
+	}
+
+	virtual float getUnitHeight()
+	{
+		return 1.2; // the leg yScale is 1.0, the tabletop yScale is 0.2, so table height = 1.2 (cube height = 1)
 	}
 
 private:

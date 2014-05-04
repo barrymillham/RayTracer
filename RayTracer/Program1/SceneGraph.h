@@ -141,6 +141,8 @@ public:
 		float getTranslationZ() {return translations.z;}
 		void setTranslationZ(float t) {translations.z = t;}
 
+		AbstractGeometryItem* getGeometry() { return geo; }
+
 
 	private:
 		AbstractGeometryItem *geo; // null if this is a transformation-only node

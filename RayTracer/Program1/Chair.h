@@ -27,7 +27,7 @@ public:
 		box.initialize(chairColor);
 	}
 
-	// Pure virtual function inherited from AbstractGeometryItem
+	// Pure virtual functions inherited from AbstractGeometryItem
 	virtual void draw(mat4 transform)
 	{
 		mat4 seatTrans = translate(mat4(1.0f), vec3(0.0f, 0.5f, 0.0f));
@@ -48,6 +48,11 @@ public:
 		box.draw(transform * frontRightLegTrans * legTrans);
 		box.draw(transform * backLeftLegTrans * legTrans);
 		box.draw(transform * backRightLegTrans * legTrans);
+	}
+
+	virtual float getUnitHeight()
+	{
+		return 2.2; //chair leg yScale = 1.0, seat yScale = 0.2, back yScale = 1.0, so chair height = 2.2
 	}
 
 private:

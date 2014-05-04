@@ -15,7 +15,7 @@
 class Box : public AbstractGeometryItem
 {
 public:
-	// Inherited from AbstractGeometryItem (not overridden):
+	// Implementations of abstract methods from AbstractGeometryItem:
 	virtual void draw(mat4 transform)
 	{
 		if(!initialized)
@@ -30,9 +30,11 @@ public:
 		geo.draw(transform);
 	}
 
+	virtual float getUnitHeight() { return 1.0f; }
+
 	// Default constructor - nothing to see here, move along people
 	Box() : initialized(false)
-	{ height = 1;}
+	{ }
 
 	// Instantiates point, color, and index arrays, and initializes the base class.
 	void initialize(vec3 boxColor);

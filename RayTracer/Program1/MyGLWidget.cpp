@@ -275,17 +275,14 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 			if(type == "box")
 			{
 				geo = &yellowBox;
-				geo->setHeight(yScale); 
 			}
 			else if(type == "chair")
 			{
 				geo = &chair;
-				geo->setHeight(yScale);
 			}
 			else if(type == "table")
 			{
 				geo = &table;
-				geo->setHeight(yScale);
 			}
 			else
 			{
@@ -306,24 +303,25 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 			//mat4 trans_scale = glm::scale(mat4(1.0f), vec3(xScale, yScale, zScale));
 			vec3 gridTranslation(-((float)floorXSize)/2.0f + xIndex, 0.5f, -((float)floorZSize)/2.0f + zIndex);
 			
-			//stackingLevels[xIndex][zIndex] += itemHeight;
-			stackingLevels[xIndex][zIndex] = 0.0f;
+			float itemBaseLevel = stackingLevels[xIndex][zIndex]; // save the stacking level before this item was added so we know where to put it
+			stackingLevels[xIndex][zIndex] += geo->getUnitHeight()*yScale;
+			//stackingLevels[xIndex][zIndex] = 0.0f;
 
 			SceneGraph::Node *thisItem = 0;
 
 			// Add the furniture item as a child node of whatever's under it on its grid location.
 			// If there's nothing under it, we will make it a child of the furniture root.
-			//SceneGraph::Node *thisItem = new SceneGraph::Node(geo, trans);
 			if(stackingItems[xIndex][zIndex] == 0)
 			{
-				//mat4 trans = trans_y * trans_grid  * trans_rot * trans_scale;
 				thisItem = new SceneGraph::Node(geo, vec3(0,rotation,0), gridTranslation, vec3(xScale, yScale, zScale));
 				furnitureRoot->addChild(thisItem);
 			}
 			else
 			{
-				//mat4 trans = trans_y * trans_rot * trans_scale;
-				thisItem = new SceneGraph::Node(geo, vec3(0,rotation,0), vec3(0,0,0), vec3(xScale, yScale, zScale));
+				SceneGraph::Node *baseNode = stackingItems[xIndex][zIndex];
+				AbstractGeometryItem *baseGeo = baseNode->getGeometry();
+				float stackingHeight = (.5*baseGeo->getUnitHeight()*baseNode->getScalingY()) + (.5*geo->getUnitHeight()*yScale);
+				thisItem = new SceneGraph::Node(geo, vec3(0,rotation,0), vec3(0,stackingHeight,0), vec3(xScale, yScale, zScale));
 				stackingItems[xIndex][zIndex]->addChild(thisItem);
 			}
 			stackingItems[xIndex][zIndex] = thisItem;
