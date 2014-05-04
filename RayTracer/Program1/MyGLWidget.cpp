@@ -346,15 +346,15 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		iterator = 0;
 		objects[iterator]->setSelected(true);
 		//SET INITIAL SLIDER VALUES
-		int temp = (int)objects[iterator]->getScalingX();
-		if(temp > 10) temp = 10;
-		emit changeScalingXSliderValue(temp*10);
-		temp = (int)objects[iterator]->getScalingY();
-		if(temp > 10) temp = 10;
-		emit changeScalingYSliderValue(temp*10);
-		temp = (int)objects[iterator]->getScalingZ();
-		if(temp > 10) temp = 10;
-		emit changeScalingZSliderValue(temp*10);
+		float temp = objects[iterator]->getScalingX();
+		if(temp > 100) temp = 100;
+		emit changeScalingXSliderValue(temp*100.0f);
+		temp = objects[iterator]->getScalingY();
+		if(temp > 100) temp = 100;
+		emit changeScalingYSliderValue(temp*100.0f);
+		temp = objects[iterator]->getScalingZ();
+		if(temp > 100) temp = 100;
+		emit changeScalingZSliderValue(temp*100.0f);
 
 	}
 	catch(std::ifstream::failure)
@@ -441,16 +441,16 @@ void MyGLWidget::nextObject()
 	objects[iterator]->setSelected(true);
 	emit changeRotationSliderValue(objects[iterator]->getRotationDegreesY()-180);
 
-	//MAKE SURE TO CLAMP TO 10 for slider
-	int temp = (int)objects[iterator]->getScalingX();
-	if(temp > 10) temp = 10;
-	emit changeScalingXSliderValue(temp*10);
-	temp = (int)objects[iterator]->getScalingY();
-	if(temp > 10) temp = 10;
-	emit changeScalingYSliderValue(temp*10);
-	temp = (int)objects[iterator]->getScalingZ();
-	if(temp > 10) temp = 10;
-	emit changeScalingZSliderValue(temp*10);
+	//MAKE SURE TO CLAMP TO 100 for slider
+	float temp = objects[iterator]->getScalingX();
+	if(temp > 100) temp = 100;
+	emit changeScalingXSliderValue(temp*100.0f);
+	temp = objects[iterator]->getScalingY();
+	if(temp > 100) temp = 100;
+	emit changeScalingYSliderValue(temp*100.0f);
+	temp = objects[iterator]->getScalingZ();
+	if(temp > 100) temp = 100;
+	emit changeScalingZSliderValue(temp*100.0f);
 
 	repaint();
 }
@@ -464,16 +464,16 @@ void MyGLWidget::previousObject()
 	objects[iterator]->setSelected(true);
 	emit changeRotationSliderValue(objects[iterator]->getRotationDegreesY()-180);
 	
-	//MAKE SURE TO CLAMP TO 10 for slider
-	int temp = (int)objects[iterator]->getScalingX();
-	if(temp > 10) temp = 10;
-	emit changeScalingXSliderValue(temp*10);
-	temp = (int)objects[iterator]->getScalingY();
-	if(temp > 10) temp = 10;
-	emit changeScalingYSliderValue(temp*10);
-	temp = (int)objects[iterator]->getScalingZ();
-	if(temp > 10) temp = 10;
-	emit changeScalingZSliderValue(temp*10);
+	//MAKE SURE TO CLAMP TO 100 for slider
+	float temp = objects[iterator]->getScalingX();
+	if(temp > 100) temp = 100;
+	emit changeScalingXSliderValue(temp*100.0f);
+	temp = objects[iterator]->getScalingY();
+	if(temp > 100) temp = 100;
+	emit changeScalingYSliderValue(temp*100.0f);
+	temp = objects[iterator]->getScalingZ();
+	if(temp > 100) temp = 100;
+	emit changeScalingZSliderValue(temp*100.0f);
 
 	repaint();
 }
@@ -486,17 +486,17 @@ void MyGLWidget::changeRotationDegrees(int r)
 
 void MyGLWidget::changeScalingX(int s)
 {
-	objects[iterator]->setScalingX(s/10);
+	objects[iterator]->setScalingX(s/100.0f);
 	update();
 }
 void MyGLWidget::changeScalingY(int s)
 {
-	objects[iterator]->setScalingY(s/10);
+	objects[iterator]->setScalingY(s/100.0f);
 	update();
 }
 void MyGLWidget::changeScalingZ(int s)
 {
-	objects[iterator]->setScalingZ(s/10);
+	objects[iterator]->setScalingZ(s/100.0f);
 	update();
 }
 
