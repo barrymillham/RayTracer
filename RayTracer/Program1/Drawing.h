@@ -19,6 +19,7 @@ struct AttribLocations
 	unsigned u_camera;
 	unsigned u_model;
 	unsigned u_lightPos;
+	unsigned u_cameraPos;
 	unsigned u_color;
 	unsigned u_ambientOnly;
 };

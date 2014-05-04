@@ -55,6 +55,7 @@ void MyGLWidget::initializeGL() {
 	attribs.u_model = glGetUniformLocation(shaderProgram, "u_modelMatrix");
 	attribs.u_camera = glGetUniformLocation(shaderProgram, "u_cameraMatrix");
 	attribs.u_lightPos = glGetUniformLocation(shaderProgram, "u_lightPos");
+	attribs.u_cameraPos = glGetUniformLocation(shaderProgram, "u_cameraPos");
 	attribs.u_color = glGetUniformLocation(shaderProgram, "u_color");
 	attribs.u_ambientOnly = glGetUniformLocation(shaderProgram, "u_ambientOnly");
 
@@ -90,6 +91,7 @@ void MyGLWidget::paintGL() {
 	// Send the light source location to the shader
 	glUniform4fv(attribs.u_lightPos, 1, &lightPos[0]);
 
+
 	// Draw a small white box to represent the light source
 	mat4 lightBoxTrans = glm::translate(mat4(1.0f), vec3(lightPos.x, lightPos.y, lightPos.z));
 	mat4 lightBoxScale = glm::scale(mat4(1.0f), vec3(0.5, 0.5, 0.5));
@@ -121,6 +123,8 @@ void MyGLWidget::updateCamera()
 	mat4 rotate_y = glm::rotate(mat4(1.0f), (float)leftRightAngle, vec3(0,1,0));
 	vec4 eyePos(0,0,zoomDistance,1);
 	eyePos = rotate_y * rotate_x * eyePos;
+	//send eyePos to shader for Bling-Phong lighting
+	glUniform4fv(attribs.u_cameraPos, 1, &eyePos[0]);
 	vec4 up(0,1,0,0);
 	up = rotate_y * rotate_x * up;
 
