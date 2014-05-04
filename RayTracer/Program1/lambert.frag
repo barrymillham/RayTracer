@@ -17,14 +17,14 @@ void main() {
 	float diffuseTerm = max(dot(fs_light, fs_normal), 0); // Lambert's equation
 
 	// Specular Blinn-Phong lighting
-	int blinnExponent = 10;
+	int blinnExponent = 35;
 	float specularTerm = pow(max(dot(fs_blinn, fs_normal), 0), blinnExponent); // Blinn-Phong specular equation
 
 	//out_Color = diffuseColor;
 	
 	// Send either diffuse + ambient + specular, or ambient only as final color based on u_ambientOnly switch
 	if(u_ambientOnly == 0)
-		out_Color = diffuseTerm * diffuseColor + ambientContrib + specularTerm * diffuseColor; //NOT SURE IF MAKING SOMETHING LIKE specularColor NECESSARY
+		out_Color = diffuseTerm * diffuseColor + ambientContrib + specularTerm * vec4(1,1,1,1); // specular color = white
 	else
 		out_Color = vec4(fs_color, 1.0);
 }
