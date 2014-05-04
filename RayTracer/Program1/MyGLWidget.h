@@ -88,6 +88,5 @@ private:
 	void updateCamera();
 	void parseSceneDescription(SceneGraph &scene, std::string fileName);
 
-	//std::vector<vec3> polygonPoints;
-	void parseGeometryDescription(Mesh &mesh, std::string fileName);
+	//void parseGeometryDescription(Mesh &mesh, std::string fileName);
 };

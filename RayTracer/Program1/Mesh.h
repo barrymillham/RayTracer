@@ -41,7 +41,6 @@ public:
 		vec3 normal;
 
 		HalfEdge *halfEdge;
-		unsigned uid;
 
 		// Remove the face from the mesh.
 		// (Note: this does not actually remove the face from the mesh's internal storage. It will simply be skipped over when creating
@@ -53,6 +52,22 @@ public:
 			srand(time(0));
 			uid = (unsigned)rand();
 		}
+
+		// Get the index of this face in the mesh's face array, which can be used as a handle to it for later operations
+		int getIndex()
+		{
+			return internalIndex;
+		}
+
+	private:
+		friend class Mesh;
+
+		// The index at which this face is stored in the mesh's face array
+		// (The client might need this to access the face later, and should use getIndex() for this.)
+		int internalIndex;
+
+		// To enable defining a total ordering of faces (mainly useful for putting them in sets, maps, etc. since the ordering is meaningless)
+		unsigned uid;
 	};
 
 	struct Vertex
@@ -61,11 +76,6 @@ public:
 		vec3 color; // not used at the moment because we don't have a color VBO (it was removed when per-object colors were implemented...might want to rethink this)
 
 		HalfEdge *halfEdge;
-		unsigned uid;
-
-		// The index of this vertex in the vertex buffer (used to build an index buffer)
-		// (Should only be set and used internally by Mesh and Vertex methods.)
-		unsigned internalIndex;
 
 		Vertex(HalfEdge *halfEdge, vec3 pos) : halfEdge(halfEdge), pos(pos)
 		{
@@ -73,8 +83,24 @@ public:
 			uid = (unsigned)rand();
 		}
 
+		// Get the index of this vertex in the mesh's vertex buffer array, which can be used as a handle to it for later operations
+		int getIndex()
+		{
+			return internalIndex;
+		}
+
 		// Computes the normal for this vertex as the average of the face normals it's associated with
 		vec3 getNormal();
+
+	private:
+		friend class Mesh;
+
+		// The index at which this vertex is stored in the mesh's vertex buffer array
+		// (The client might need this to access the face later, and should use getIndex() for this; also used by Mesh to build an index buffer.)
+		int internalIndex;
+
+		// To enable defining a total ordering of vertices (mainly useful for putting them in sets, maps, etc. since the ordering is meaningless)
+		unsigned uid;
 	};
 
 	struct HalfEdge
@@ -85,7 +111,26 @@ public:
 		Face *face;
 
 		HalfEdge(Vertex *vertex, HalfEdge *next, HalfEdge *sym, Face *face) : vertex(vertex), next(next), sym(sym), face(face)
-		{ }
+		{
+			srand(time(0));
+			uid = (unsigned)rand();
+		}
+
+		// Get the index of this halfedge in the mesh's halfedge array, which can be used as a handle to it for later operations
+		int getIndex()
+		{
+			return internalIndex;
+		}
+
+	private:
+		friend class Mesh;
+
+		// The index at which this face is stored in the mesh's face array
+		// (The client might need this to access the face later, and should use getIndex() for this.)
+		int internalIndex;
+
+		// To enable defining a total ordering of faces (mainly useful for putting them in sets, maps, etc. since the ordering is meaningless)
+		unsigned uid;
 	};
 
 	Mesh() : buffered(false)
@@ -98,40 +143,60 @@ public:
 		glDeleteBuffers(1, &ibo);
 	}
 
-	void addFace(HalfEdge *halfEdge, vec3 normal)
+	int addFace(HalfEdge *halfEdge, vec3 normal)
 	{
-		faces.push_back(Face(halfEdge, normal));
+		Face newFace(halfEdge, normal);
+		newFace.internalIndex = faces.size();
+		faces.push_back(newFace);
+
+		return newFace.internalIndex;
 	}
 
-	// DEPRECATED - from face-list implementation
-	void addFace(Face face)
+	// Returns the internal index of the newly-created vertex
+	int addVertex(HalfEdge *halfEdge, vec3 pos)
 	{
-		faces.push_back(face);
+		Vertex newVertex(halfEdge, pos);
+		newVertex.internalIndex = vertices.size();
+		vertices.push_back(newVertex);
 
-		positions.push_back(face.p0);
-		positions.push_back(face.p1);
-		positions.push_back(face.p2);
-		for(int i = 0; i < 3; i++)
-		{
-			normals.push_back(face.normal);
-			indices.push_back(indices.size());
-		}
+		return newVertex.internalIndex;
 	}
 
-	// DEPRECATED - from face-list implementation
-	// (the half-edge version will be similar, but should probably return a pointer instead)
-	Face getFace(int index)
+	int addHalfEdge(Vertex *vertex, HalfEdge *next, HalfEdge *sym, Face *face)
 	{
-		return faces[index];
+		HalfEdge newHalfEdge(vertex, next, sym, face);
+		newHalfEdge.internalIndex = halfEdges.size();
+		halfEdges.push_back(newHalfEdge);
+
+		return newHalfEdge.internalIndex;
 	}
 
-	// TODO: update this for half-edge
+	// Note: we *don't* have corresponding delete functions because this would require shifting back all successive elements of the respective
+	// array, which would invalidate all handles to successive items (not to mention that it'd be a very slow operation for large meshes).
+
+	Face* getFace(int index)
+	{
+		return &faces[index];
+	}
+
+	Vertex* getVertex(int index)
+	{
+		return &vertices[index];
+	}
+
+	HalfEdge* getHalfEdge(int index)
+	{
+		return &halfEdges[index];
+	}
+
 	// Remove all faces from the mesh structure
 	void clear()
 	{
 		faces.clear();
-		positions.clear();
-		normals.clear();
+		vertices.clear();
+		halfEdges.clear();
+
+		indices.clear();
 
 		if(buffered)
 		{
@@ -147,62 +212,10 @@ public:
 	// Note: the std::vector indexBuffer will be emptied first, if there's anything in it.
 	void fillIndexBuffer(std::vector<unsigned> &indexBuffer);
 
-	// TODO: update for half-edge
-	void bufferData(AttribLocations attribs)
-	{
-		Mesh::attribs = attribs;
-		
-		// Delete old VBOs if we have something previously loaded
-		if(buffered)
-		{
-			glDeleteBuffers(1, &vbo);
-			glDeleteBuffers(1, &nbo);
-			glDeleteBuffers(1, &ibo);
-		}
+	// Generate VBOs on the GPU based on the data stored in our half-edge structure
+	void bufferData(AttribLocations attribs);
 
-		// Generate and fill new buffers
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, positions.size()*sizeof(vec3), positions.data(), GL_STATIC_DRAW);
-
-		glGenBuffers(1, &nbo);
-		glBindBuffer(GL_ARRAY_BUFFER, nbo);
-		glBufferData(GL_ARRAY_BUFFER, normals.size()*sizeof(vec3), normals.data(), GL_STATIC_DRAW);
-
-		glGenBuffers(1, &ibo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(unsigned), indices.data(), GL_STATIC_DRAW);
-
-		buffered = true;
-	}
-
-	void draw(mat4 transform)
-	{
-		if(!buffered)
-		{
-			MeshException e;
-			e.reason = "Mesh: must call bufferData() before drawing!";
-			throw e;
-		}
-
-		// Bind the shader's attribute pointers to the VBOs used by this mesh
-		// (this is needed for multiple meshes, and other geometry objects, to coexist)
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glEnableVertexAttribArray(attribs.v_pos);
-		glVertexAttribPointer(attribs.v_pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, nbo);
-		glEnableVertexAttribArray(attribs.v_normal);
-		glVertexAttribPointer(attribs.v_normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		// Send the model matrix, and a color for the mesh, to the GPU as uniforms
-		glUniformMatrix4fv(attribs.u_model, 1, GL_FALSE, &(mat4(1.0f))[0][0]);
-		glUniform3f(attribs.u_color, 1.0f, 0.0f, 0.0f); // set color to red (TODO: don't hardcode this)
-		//glUniform1i(attribs.u_ambientOnly, 1); // turn off advanced lighting (for debugging - comment out under normal circumstances)
-			
-		// Draw the mesh
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-	}
+	void draw(mat4 transform);
 
 	void subDivide() {
 		//Mesh newMesh = Mesh();
@@ -230,8 +243,6 @@ private:
 	std::vector<Vertex> vertices;
 	std::vector<HalfEdge> halfEdges;
 
-	std::vector<vec3> positions;
-	std::vector<vec3> normals;
 	std::vector<unsigned> indices;
 
 	bool buffered;
