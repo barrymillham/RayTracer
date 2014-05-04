@@ -220,21 +220,16 @@ public:
 	void subDivide() {
 		//Mesh newMesh = Mesh();
 
-		//int i, j, a, b, c, d;
-		//Face f;
-		//Vertex v, x;
- 
-		
-		
-		/*foreach (i, f, m->f) {
-			foreach(j, v, f->v) {
-				_get_idx(a, updated_point(v));
-				_get_idx(b, edge_point(elem(f->e, (j + 1) % len(f->e))));
-				_get_idx(c, face_point(f));
-				_get_idx(d, edge_point(elem(f->e, j)));
-				model_add_face(nm, 4, a, b, c, d);
-			}
-		}*/
+		/*
+		First, copy the old mesh into another one. This is because we need to remember the old vertices.
+		Then, go through each face of the new mesh, adding a vertex in the middle of the face. 
+			To do this, add up all vertex positions, and divide by the number of vertices making up the face.
+		Then, go through each edge adding a vertex at the average of four points: The vertices on either end 
+		of an existing edge, and the two new vertices added to the faces that the edge separates.
+		Then, all original vertices need to be moved. Go through each vertex of the new mesh that was an 
+		original vertex, and move it's position to the average of all surrounding new vertices.
+		*/
+
 
 	}
 
