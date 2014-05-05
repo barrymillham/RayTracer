@@ -144,6 +144,21 @@ public:
 	Mesh() : buffered(false)
 	{ }
 
+	// Copy constructor - the new copy is NOT buffered, and the original's buffers are not affected
+	// (they'll be cleaned up by the original's destructor when it's called)
+	Mesh(Mesh &otherMesh)
+	{
+		faces = otherMesh.faces;
+		vertices = otherMesh.vertices;
+		halfEdges = otherMesh.halfEdges;
+		indices = otherMesh.indices;
+
+		attribs = otherMesh.attribs;
+		
+		buffered = false;
+		vbo = nbo = ibo = 0;
+	}
+
 	~Mesh()
 	{
 		glDeleteBuffers(1, &vbo);
@@ -248,6 +263,5 @@ private:
 
 	bool buffered;
 	AttribLocations attribs;
-	float height;
 	unsigned vbo, nbo, ibo;
 };
