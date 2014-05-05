@@ -22,4 +22,5 @@ class AbstractGeometryItem
 public:
 	virtual void draw(glm::mat4 transform) = 0;
 	virtual float getUnitHeight() = 0;
+	virtual float testRayIntersection(vec3 p0, vec3 v0, mat4 tInv) = 0;
 };

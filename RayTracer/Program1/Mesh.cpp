@@ -366,3 +366,88 @@ void Mesh::subDivide()
 	//Finally, overwrite THIS mesh to be equal to the mesh that we just created!
 	*this = newMesh; 
 }
+
+float Mesh::testRayIntersection(vec3 p0, vec3 v0, mat4 tInv)
+{
+	//LOOP THROUGH ALL FACES, storing intersection point in vector
+	std::vector<float> intersections;
+	for(int i=0; i<faces.size(); i++)
+	{
+
+		//get p1, p2, p3 (vec3's)
+		vec4 point1(faces[i].p0,1);
+		vec4 point2(faces[i].p1,1);
+		vec4 point3(faces[i].p2,1);
+
+		vec4 D(glm::normalize(v0), 0); // note: D = || P - E || = || v0 || (recall that v0 = P - E)
+		mat4 tStarInv = tInv; // tInv with three elements zeroed out - a special form that we need to transform D
+		tStarInv[3][0] = tStarInv[3][1] = tStarInv[3][2] = 0;
+		D = tStarInv * D;
+
+		vec4 pos(p0,1);
+		pos = tInv * pos;
+
+
+
+		//RAY-PLANE INTERSECTION 
+		//will find intersection point on plane, R
+		vec4 R; //intersection point
+		vec3 normal; //normal for triangle
+		float t; //t in the ray equation
+
+		//find normal of triangle
+		normal = glm::cross((v4Tov3(point1) - v4Tov3(point2)), (v4Tov3(point3) - v4Tov3(point2)));
+		glm::normalize(normal);
+
+		//find t
+		//make sure the denominator isn't zero:
+		float denom = glm::dot(normal, v4Tov3(D));
+		if(denom == 0)
+			return -1;
+
+		float numerator = glm::dot(normal, v4Tov3(point1 - pos));
+
+		t = numerator/denom;
+		if(t<0) return -1;
+
+		//now put t in ray equation to find intersection point R:
+		D *= t;
+		R = pos + D;
+
+		//NOW TEST TO SEE IF POINT IS INSIDE TRIANGLE
+		float s = area(v4Tov3(point1), v4Tov3(point2), v4Tov3(point3)); 
+		float s1 = area(v4Tov3(R), v4Tov3(point2), v4Tov3(point3)) / s; 
+		if(s1 > 1 || s1 < 0) return -1; //we know it's outside the circle
+		float s2 = area(v4Tov3(R), v4Tov3(point3), v4Tov3(point1)) / s; 
+		if(s2 > 1 || s2 < 0) return -1; //we know it's outside the circle
+		float s3 = area(v4Tov3(R), v4Tov3(point1), v4Tov3(point2)) / s; 
+		if(s3 > 1 || s3 < 0) return -1; //we know it's outside the circle
+
+		if(epsilonEquals(1, s1+s2+s3)) intersections.push_back(t);
+	}
+
+	//return smallest intersection point (or -1 if no intersection)
+	if(intersections.size() == 0) return -1;
+	else {
+		float temp = intersections[0];
+		for(int i=1; i<intersections.size(); i++)
+			if(intersections[i] < temp) temp = intersections[i];
+		return temp;
+	}
+}
+
+bool Mesh::epsilonEquals(float n, float m) 
+{
+	if(abs(m-n) < 1e-3) return true;
+	return false;
+}
+
+float Mesh::area(vec3 p1, vec3 p2, vec3 p3)
+{
+	//construct matrices to be used to find determinants
+	mat3 m1(p1.y, p1.z, 1, p2.y, p2.z, 1, p3.y, p3.z, 1);
+	mat3 m2(p1.z, p1.x, 1, p2.z, p2.x, 1, p3.z, p3.x, 1);
+	mat3 m3(p1.x, p1.y, 1, p2.x, p2.y, 1, p3.x, p3.y, 1);
+
+	return .5*sqrt(glm::determinant(m1)*glm::determinant(m1) + glm::determinant(m2)*glm::determinant(m2) + glm::determinant(m3)*glm::determinant(m3));
+}

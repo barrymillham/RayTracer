@@ -132,3 +132,74 @@ void Box::initialize(vec3 boxColor)
 
 	initialized = true;
 }
+
+float Box::testRayIntersection(vec3 p0, vec3 v0, mat4 tInv)
+{
+	//FIND 
+	vec4 D(glm::normalize(v0), 0); // note: D = || P - E || = || v0 || (recall that v0 = P - E)
+    mat4 tStarInv = tInv; // tInv with three elements zeroed out - a special form that we need to transform D
+    tStarInv[3][0] = tStarInv[3][1] = tStarInv[3][2] = 0;
+    D = tStarInv * D;
+
+	//Transform p0 with tInv 
+	vec4 p(p0, 1);
+	p = tInv * p;
+
+	//bounds are {-0.5, -0.5, -0.5} -> {0.5, 0.5, 0.5} since this is all in local space
+	float T1x = (-0.5 - p.x) / D.x;
+	float T2x = ( 0.5 - p.x) / D.x;
+	float T1y = (-0.5 - p.y) / D.y;
+	float T2y = ( 0.5 - p.y) / D.y;
+	float T1z = (-0.5 - p.z) / D.z;
+	float T2z = ( 0.5 - p.z) / D.z;
+
+	float tmin, tmax, tymin, tymax, tzmin, tzmax;
+	
+	/*	The next three defined floats are to avoid the case where the direction components would be -0.0
+		This is only a small part of the time, but sometimes that can happen through various operations,
+		and if it does happen, it screws up calculations. Defining this division float and then multiplying
+		it in is not only faster on the CPU, but it gets rid of that zero problem.
+	*/
+	float divideByDirectionX = 1 / D.x;
+	float divideByDirectionY = 1 / D.y;
+	float divideByDirectionZ = 1 / D.z;
+	
+	if (divideByDirectionX >= 0) {
+		tmin = (-0.5 - p.x) * divideByDirectionX;
+		tmax = ( 0.5 - p.x) * divideByDirectionX;
+	} else {
+		tmin = ( 0.5 - p.x) * divideByDirectionX;
+		tmax = (-0.5 - p.x) * divideByDirectionX;
+	}
+	
+	if (divideByDirectionY >= 0) {
+		tymin = (-0.5 - p.y) * divideByDirectionY;
+		tymax = ( 0.5 - p.y) * divideByDirectionY;
+	} else {
+		tymin = ( 0.5 - p.y) * divideByDirectionY;
+		tymax = (-0.5 - p.y) * divideByDirectionY;
+	}
+	
+	if ( (tmin > tymax) || (tymin > tmax) ) return -1.0;
+
+	if (tymin > tmin) tmin = tymin;
+	if (tymax < tmax) tmax = tymax;
+	
+	if (divideByDirectionZ >= 0) {
+		tzmin = (-0.5 - p.z) * divideByDirectionZ;
+		tzmax = ( 0.5 - p.z) * divideByDirectionZ;
+	} else {
+		tzmin = ( 0.5 - p.z) * divideByDirectionZ;
+		tzmax = (-0.5 - p.z) * divideByDirectionZ;
+	}
+
+	if ( (tmin > tzmax) || (tzmin > tmax) ) return -1.0;
+	if (tzmin > tmin) tmin = tzmin;
+	if (tzmax < tmax) tmax = tzmax;
+
+	//-10000000 -> 10000000 is maybe not what i want... it's supposed to be t0 -> t1 where that's a valid intersection interval
+	if ((tmin < 100000000) && (tmax > -100000000)) { 
+		return tmin;
+	}
+	return -1;
+}

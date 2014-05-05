@@ -11,6 +11,8 @@
 
 #include "GeometryItem.h"
 
+using glm::vec4;
+
 // Unit cube
 class Box : public AbstractGeometryItem
 {
@@ -35,6 +37,8 @@ public:
 	// Default constructor - nothing to see here, move along people
 	Box() : initialized(false)
 	{ }
+
+	virtual float testRayIntersection(vec3 p0, vec3 v0, mat4 tInv);
 
 	// Instantiates point, color, and index arrays, and initializes the base class.
 	void initialize(vec3 boxColor);

@@ -25,6 +25,8 @@ using glm::mat4;
 #include "Drawing.h"
 #include "ExceptionClasses.h"
 
+using glm::mat3;
+
 class Mesh : public AbstractGeometryItem
 {
 public:
@@ -254,6 +256,9 @@ public:
 	virtual void draw(mat4 transform);
 	virtual float getUnitHeight(); // Calculate the height of the mesh (maximum - minimum points in y-dimension)
 
+	virtual float testRayIntersection(vec3 p0, vec3 v0, mat4 tInv);
+	inline vec3 v4Tov3(const vec4 &t) {return vec3(t.x,t.y,t.z);} //used in intersection test
+
 private:
 	std::vector<Face> faces;
 	std::vector<Vertex> vertices;
@@ -264,4 +269,7 @@ private:
 	bool buffered;
 	AttribLocations attribs;
 	unsigned vbo, nbo, ibo;
+
+	bool epsilonEquals(float n, float m);
+	float area(vec3 p1, vec3 p2, vec3 p3);
 };
