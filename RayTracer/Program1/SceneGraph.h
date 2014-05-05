@@ -35,7 +35,9 @@ public:
 		//		If not null, the pointer is expected to remain valid for the life of
 		//		the Node (i.e. memory management is the caller's responsibility).
 		// transform: transformation matrix for this node
-		Node(AbstractGeometryItem *geo, mat4 transform) : geo(geo), transform(transform)
+
+		//Node(AbstractGeometryItem *geo, mat4 transform) : geo(geo), transform(transform)
+		Node(AbstractGeometryItem *geo, vec3 r, vec3 t, vec3 s) : geo(geo), rotations(r), translations(t), scalings(s)
 		{ 
 			selected = false;
 			yTrans = 0.0;	
@@ -60,23 +62,25 @@ public:
 		float getYTrans() {
 			return yTrans;
 		}
-		float getScaledHeight() {
-			if (geo != NULL) {
-				return geo->getYScale() * geo->getHeight();
-				//geo->yScale is set when read it's read in from the configuration documents, and geo->height 
-				//	is set in the initialize function of the GeomType.h (based on the yScales of each of the cubes
-				//  that make up the geometry.
-			}
-		}
 		// Draw the node, and all of its child nodes (preorder traversal).
 		// parentTransform: transformation matrix of the parent node, which will
 		//		be composed with this node's transformation for drawing and passed
 		//		on to its children in similar fashion
 		void draw(mat4 parentTransform)
 		{
+			//construct temporary matrix using stored values
+			mat4 scaleMat = glm::scale(mat4(1.0f), scalings);
+			mat4 rotXMat = glm::rotate(mat4(1.0f), rotations.x, vec3(1,0,0));
+			mat4 rotYMat = glm::rotate(mat4(1.0f), rotations.y, vec3(0,1,0));
+			mat4 rotZMat = glm::rotate(mat4(1.0f), rotations.z, vec3(0,0,1));
+			mat4 transMat = glm::translate(mat4(1.0f), translations);
+
+			mat4 transform = transMat * rotZMat * rotYMat * rotXMat * scaleMat;
+			
 			mat4 composition = parentTransform * transform;
+
 			if(geo)
-			{
+			{			
 				if(selected)
 				{
 					glUniform1i(attribs.u_ambientOnly, 1);
@@ -92,13 +96,36 @@ public:
 
 		void setSelected(bool s) {selected = s;}
 		bool getSelected() {return selected;}
+		int getRotationDegreesY() {return rotations.y;}
+		void setRotationDegreesY(int r) {rotations.y = r;}
+		float getScalingX() {return scalings.x;}
+		void setScalingX(float s) {scalings.x = s;}
+		float getScalingY() {return scalings.y;}
+		void setScalingY(float s) {scalings.y = s;}
+		float getScalingZ() {return scalings.z;}
+		void setScalingZ(float s) {scalings.z = s;}
+		float getTranslationX() {return translations.x;}
+		void setTranslationX(float t) {translations.x = t;}
+		float getTranslationY() {return translations.y;}
+		void setTranslationY(float t) {translations.y = t;}
+		float getTranslationZ() {return translations.z;}
+		void setTranslationZ(float t) {translations.z = t;}
+
+		AbstractGeometryItem* getGeometry() { return geo; }
+
 
 	private:
 		AbstractGeometryItem *geo; // null if this is a transformation-only node
-		mat4 transform;
+		//mat4 transform;
 		std::vector<Node*> children; // empty if this is a leaf
 		bool selected;
 		float yTrans;
+
+		//values modified by UI sliders
+		//int rotationDegrees;
+		vec3 rotations;
+		vec3 translations;
+		vec3 scalings;
 	};
 
 	// Constructor
@@ -106,7 +133,8 @@ public:
 	// The rest of the tree is attached to this node. (see addChildToHead())
 	SceneGraph()
 	{
-		head = new Node(0, mat4(1.0f)); // null geometry, identity matrix
+		//head = new Node(0, mat4(1.0f)); // null geometry, identity matrix
+		head = new Node(0, vec3(0,0,0), vec3(0,0,0), vec3(1,1,1)); // null geometry, identity transformations
 	}
 
 	// Destructor
@@ -121,7 +149,7 @@ public:
 	void clear()
 	{
 		delete head;
-		head = new Node(0, mat4(1.0f));
+		head = new Node(0, vec3(0,0,0), vec3(0,0,0), vec3(1,1,1)); // null geometry, identity transformations
 	}
 
 	// Adds a child of the head of the scene graph.

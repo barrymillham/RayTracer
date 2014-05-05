@@ -212,13 +212,14 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		file >> floorXSize >> floorZSize >> numItems;
 
 		// Start our tree at the floor
-		mat4 scene_rotx = glm::rotate(mat4(1.0f), 0.0f, vec3(1.0f, 0.0f, 0.0f));
+		/*mat4 scene_rotx = glm::rotate(mat4(1.0f), 0.0f, vec3(1.0f, 0.0f, 0.0f));
 		mat4 scene_roty = glm::rotate(mat4(1.0f), 0.0f, vec3(0.0f, 1.0f, 0.0f));
 		mat4 scene_rotz = glm::rotate(mat4(1.0f), 0.0f, vec3(0.0f, 0.0f, 1.0f));
 		mat4 scene_scale = glm::scale(mat4(1.0f), vec3(2, 2, 2));
 		mat4 floorScale = glm::scale(mat4(1.0f), vec3((float)floorXSize, 0.1f, (float)floorZSize));
-		mat4 floorTransform = scene_rotz * scene_roty * scene_rotx * scene_scale * floorScale;
-		SceneGraph::Node *floor = new SceneGraph::Node(&greenBox, floorTransform);
+		mat4 floorTransform = scene_rotz * scene_roty * scene_rotx * scene_scale * floorScale;*/
+		//construct vectors to store transformation values in node
+		SceneGraph::Node *floor = new SceneGraph::Node(&greenBox, vec3(0,0,0), vec3(0,0,0), vec3(2*(float)floorXSize,2*0.1f,2*(float)floorZSize));
 		// But, we need to send up the camera matrix as a root node above the floor, so make the floor a child of that.
 		//SceneGraph::Node *root = new SceneGraph::Node(0, camera);
 		//scene.addChildToHead(root);
@@ -230,8 +231,8 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		//floorTransform = glm::scale(floorTransform, vec3(2, 2, 2));
 		//floorTransform = glm::inverse(floorScale) * floorTransform;
 		mat4 onFloor_trans = glm::translate(mat4(1.0f), vec3(0,0.55f,0));
-		SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, glm::inverse(floorScale) * onFloor_trans);
-		//furnitureRoot->setYTrans(0.0f); //Don't need to do this because it happens in constructor
+		//SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, glm::inverse(floorScale) * onFloor_trans);
+		SceneGraph::Node *furnitureRoot = new SceneGraph::Node(0, vec3(0,0,0), vec3(0,0.55,0), vec3(1/((float)floorXSize), 1/(0.1f), 1/((float)floorZSize)));
 		floor->addChild(furnitureRoot);
 
 
@@ -248,16 +249,22 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		furnitureRoot->addChild(new SceneGraph::Node(&box, rightWall_trans * leftWall_scale));
 */
 		// Read in the furniture from the file and build the scene graph
-		// We're going to need another array to keep track of the "top" item at each grid location:
+		// First off, we need to keep track of what the "stacking level" is at each grid location:
+		float **stackingLevels = new float*[floorXSize];
+		// Likewise, we're going to need another array to keep track of the "top" item at each grid location:
 		SceneGraph::Node ***stackingItems = new SceneGraph::Node**[floorXSize];
 		for(int i = 0; i < floorXSize; i++)
+		{
+			stackingLevels[i] = new float[floorZSize];
 			stackingItems[i] = new SceneGraph::Node*[floorZSize];
+		}
 
 		// Initialize each grid location's item pointer to 0
 		for(int i = 0; i < floorXSize; i++)
 		{
 			for(int j = 0; j < floorZSize; j++)
 			{
+				stackingLevels[i][j] = 0;
 				stackingItems[i][j] = 0; // null pointer means the grid location is empty
 			}
 		}
@@ -274,48 +281,55 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 
 			AbstractGeometryItem *geo;
 
-			if(type == "box") geo = &yellowBox;
-			else if(type == "chair") geo = &chair;
-			else if(type == "table") geo = &table;
-			else {
+			if(type == "box")
+			{
+				geo = &yellowBox;
+			}
+			else if(type == "chair")
+			{
+				geo = &chair;
+			}
+			else if(type == "table")
+			{
+				geo = &table;
+			}
+			else
+			{
 				SceneGraphException ex;
 				ex.reason = "SceneGraph: invalid furniture type \"" + type + "\"!";
 				throw ex;
 			}
-
-			geo->setYScale(yScale);
-			geo->setXScale(xScale);
-			geo->setZScale(zScale);
-			geo->setRotation(rotation);
 			
 			// For the translation, first we need to determine where this item's grid position is in world space.
 			// For simplicity, we'll define our grid to be a floorXSize-by-floorZSize "square" in the x-z plane, centered
 			// at the origin. The grid point 0,0 will be at (-floorXSize*.5f, -floorZSize*.5f) in world space.
-			mat4 trans_grid = glm::translate(mat4(1.0f), vec3(-((float)floorXSize)/2.0f + xIndex, 0.0f, -((float)floorZSize)/2.0f + zIndex));
-			mat4 trans_rot = glm::rotate(mat4(1.0f), rotation, vec3(0.0f, 1.0f, 0.0f)); // rotation is about the y-axis
-			mat4 trans_scale = glm::scale(mat4(1.0f), vec3(xScale, yScale, zScale));			
+			//mat4 trans_grid = glm::translate(mat4(1.0f), vec3(-((float)floorXSize)/2.0f + xIndex, 0.0f, -((float)floorZSize)/2.0f + zIndex));
+			//// Now, we need to position the item vertically, on top of any previous items in its grid location.
+			//mat4 trans_y = glm::translate(mat4(1.0f), vec3(0.0f, stackingLevels[xIndex][zIndex], 0.0f)); // 0.5 is a hardcoded hack, specific to current furniture - need to change this
+			//// Rotate and scale
+			//mat4 trans_rot = glm::rotate(mat4(1.0f), rotation, vec3(0.0f, 1.0f, 0.0f)); // rotation is about the y-axis
+			//mat4 trans_scale = glm::scale(mat4(1.0f), vec3(xScale, yScale, zScale));
+			vec3 gridTranslation(-((float)floorXSize)/2.0f + xIndex, 0.5f, -((float)floorZSize)/2.0f + zIndex);
+			
+			float itemBaseLevel = stackingLevels[xIndex][zIndex]; // save the stacking level before this item was added so we know where to put it
+			stackingLevels[xIndex][zIndex] += geo->getUnitHeight()*yScale;
+			//stackingLevels[xIndex][zIndex] = 0.0f;
 
-			SceneGraph::Node *thisItem = new SceneGraph::Node(geo, mat4(1.0f));
+			SceneGraph::Node *thisItem = 0;
 
 			// Add the furniture item as a child node of whatever's under it on its grid location.
 			// If there's nothing under it, we will make it a child of the furniture root.
-			//SceneGraph::Node *thisItem = new SceneGraph::Node(geo, trans);
-			if(stackingItems[xIndex][zIndex] == 0) //If else in this location
+			if(stackingItems[xIndex][zIndex] == 0)
 			{
-				mat4 trans = trans_grid  * trans_rot * trans_scale;
-				thisItem = new SceneGraph::Node(geo, trans);
+				thisItem = new SceneGraph::Node(geo, vec3(0,rotation,0), gridTranslation, vec3(xScale, yScale, zScale));
 				furnitureRoot->addChild(thisItem);
 			}
 			else //if there's geometry at this spot already.
 			{
-				float parentYTrans = stackingItems[xIndex][zIndex]->getYTrans();
-				float parentHeight = stackingItems[xIndex][zIndex]->getScaledHeight();
-				
-				// There is geometry here, so set the yTranslation equal to parent's height + its yTranslation
-				mat4 trans_y = glm::translate(mat4(1.0f), vec3(0.0f, parentYTrans + parentHeight, 0.0f));
-			
-				mat4 trans = trans_y * trans_rot * trans_scale;
-				thisItem = new SceneGraph::Node(geo, trans);
+				SceneGraph::Node *baseNode = stackingItems[xIndex][zIndex];
+				AbstractGeometryItem *baseGeo = baseNode->getGeometry();
+				float stackingHeight = (.5*baseGeo->getUnitHeight()*baseNode->getScalingY()) + (.5*geo->getUnitHeight()*yScale);
+				thisItem = new SceneGraph::Node(geo, vec3(0,rotation,0), vec3(0,stackingHeight,0), vec3(xScale, yScale, zScale));
 				stackingItems[xIndex][zIndex]->addChild(thisItem);
 			}
 			stackingItems[xIndex][zIndex] = thisItem;
@@ -335,8 +349,19 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		delete [] stackingItems;
 
 		//set the first vector as the default "selected"
-		objects[0]->setSelected(true);
 		iterator = 0;
+		objects[iterator]->setSelected(true);
+		//SET INITIAL SLIDER VALUES
+		float temp = objects[iterator]->getScalingX();
+		if(temp > 100) temp = 100;
+		emit changeScalingXSliderValue(temp*100.0f);
+		temp = objects[iterator]->getScalingY();
+		if(temp > 100) temp = 100;
+		emit changeScalingYSliderValue(temp*100.0f);
+		temp = objects[iterator]->getScalingZ();
+		if(temp > 100) temp = 100;
+		emit changeScalingZSliderValue(temp*100.0f);
+
 	}
 	catch(std::ifstream::failure)
 	{
@@ -420,6 +445,19 @@ void MyGLWidget::nextObject()
 	iterator++;
 	if(iterator > objects.size()-1) iterator = 0;
 	objects[iterator]->setSelected(true);
+	emit changeRotationSliderValue(objects[iterator]->getRotationDegreesY()-180);
+
+	//MAKE SURE TO CLAMP TO 100 for slider
+	float temp = objects[iterator]->getScalingX();
+	if(temp > 100) temp = 100;
+	emit changeScalingXSliderValue(temp*100.0f);
+	temp = objects[iterator]->getScalingY();
+	if(temp > 100) temp = 100;
+	emit changeScalingYSliderValue(temp*100.0f);
+	temp = objects[iterator]->getScalingZ();
+	if(temp > 100) temp = 100;
+	emit changeScalingZSliderValue(temp*100.0f);
+
 	repaint();
 }
 
@@ -430,6 +468,19 @@ void MyGLWidget::previousObject()
 	if(iterator < 0)
 		iterator = objects.size()-1;
 	objects[iterator]->setSelected(true);
+	emit changeRotationSliderValue(objects[iterator]->getRotationDegreesY()-180);
+	
+	//MAKE SURE TO CLAMP TO 100 for slider
+	float temp = objects[iterator]->getScalingX();
+	if(temp > 100) temp = 100;
+	emit changeScalingXSliderValue(temp*100.0f);
+	temp = objects[iterator]->getScalingY();
+	if(temp > 100) temp = 100;
+	emit changeScalingYSliderValue(temp*100.0f);
+	temp = objects[iterator]->getScalingZ();
+	if(temp > 100) temp = 100;
+	emit changeScalingZSliderValue(temp*100.0f);
+
 	repaint();
 }
 
@@ -615,3 +666,62 @@ void MyGLWidget::previousObject()
 //
 //	mesh.bufferData(attribs);
 //}
+
+void MyGLWidget::changeRotationDegrees(int r)
+{
+	objects[iterator]->setRotationDegreesY(r+180);
+	update();
+}
+
+void MyGLWidget::changeScalingX(int s)
+{
+	objects[iterator]->setScalingX(s/100.0f);
+	update();
+}
+void MyGLWidget::changeScalingY(int s)
+{
+	objects[iterator]->setScalingY(s/100.0f);
+	update();
+}
+void MyGLWidget::changeScalingZ(int s)
+{
+	objects[iterator]->setScalingZ(s/100.0f);
+	update();
+}
+
+void MyGLWidget::plusTranslationX()
+{
+	float temp = objects[iterator]->getTranslationX();
+	objects[iterator]->setTranslationX(temp+1.0f);
+	update();
+}
+void MyGLWidget::minusTranslationX()
+{
+	float temp = objects[iterator]->getTranslationX();
+	objects[iterator]->setTranslationX(temp-1.0f);
+	update();
+}
+void MyGLWidget::plusTranslationY()
+{
+	float temp = objects[iterator]->getTranslationY();
+	objects[iterator]->setTranslationY(temp+1.0f);
+	update();
+}
+void MyGLWidget::minusTranslationY()
+{
+	float temp = objects[iterator]->getTranslationY();
+	objects[iterator]->setTranslationY(temp-1.0f);
+	update();
+}
+void MyGLWidget::plusTranslationZ()
+{
+	float temp = objects[iterator]->getTranslationZ();
+	objects[iterator]->setTranslationZ(temp+1.0f);
+	update();
+}
+void MyGLWidget::minusTranslationZ()
+{
+	float temp = objects[iterator]->getTranslationZ();
+	objects[iterator]->setTranslationZ(temp-1.0f);
+	update();
+}

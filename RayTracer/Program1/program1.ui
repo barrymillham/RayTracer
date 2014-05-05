@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1001</width>
-      <height>561</height>
+      <width>811</width>
+      <height>621</height>
      </rect>
     </property>
    </widget>
@@ -38,9 +38,6 @@
     </property>
     <property name="maximum">
      <number>20</number>
-    </property>
-    <property name="value">
-     <number>0</number>
     </property>
     <property name="sliderPosition">
      <number>0</number>
@@ -249,8 +246,8 @@
    <widget class="QPushButton" name="pushButton_7">
     <property name="geometry">
      <rect>
-      <x>480</x>
-      <y>570</y>
+      <x>910</x>
+      <y>430</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -262,14 +259,273 @@
    <widget class="QPushButton" name="pushButton_8">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>570</y>
+      <x>820</x>
+      <y>430</y>
       <width>91</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>Previous Object</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>60</y>
+      <width>111</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>GEOMETRY</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="rotationSlider">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>140</y>
+      <width>121</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>-180</number>
+    </property>
+    <property name="maximum">
+     <number>180</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>110</y>
+      <width>41</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Rotate</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>190</y>
+      <width>51</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Translate</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>300</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Scale</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="rotationSlider_3">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>330</y>
+      <width>121</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>1000</number>
+    </property>
+    <property name="value">
+     <number>10</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_9">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>240</y>
+      <width>31</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-Y</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_10">
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>230</y>
+      <width>31</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+X</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_11">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>240</y>
+      <width>31</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-Z</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_12">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>220</y>
+      <width>31</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+Y</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_13">
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>230</y>
+      <width>31</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-X</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_14">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>220</y>
+      <width>31</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+Z</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="rotationSlider_4">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>350</y>
+      <width>121</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>1000</number>
+    </property>
+    <property name="value">
+     <number>10</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="rotationSlider_5">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>370</y>
+      <width>121</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>1000</number>
+    </property>
+    <property name="value">
+     <number>10</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>330</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>x</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>350</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_12">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>370</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>z</string>
     </property>
    </widget>
   </widget>
@@ -306,6 +562,10 @@
    <header location="global">myglwidget.h</header>
    <container>1</container>
    <slots>
+    <signal>changeRotationSliderValue(int)</signal>
+    <signal>changeScalingXSliderValue(int)</signal>
+    <signal>changeScalingYSliderValue(int)</signal>
+    <signal>changeScalingZSliderValue(int)</signal>
     <slot>changeZoom(int)</slot>
     <slot>changeUpDownAngle(int)</slot>
     <slot>changeLeftRightAngle(int)</slot>
@@ -318,6 +578,16 @@
     <slot>lightZDec()</slot>
     <slot>nextObject()</slot>
     <slot>previousObject()</slot>
+    <slot>changeRotationDegrees(int)</slot>
+    <slot>changeScalingX(int)</slot>
+    <slot>changeScalingY(int)</slot>
+    <slot>changeScalingZ(int)</slot>
+    <slot>plusTranslationX()</slot>
+    <slot>plusTranslationY()</slot>
+    <slot>plusTranslationZ()</slot>
+    <slot>minusTranslationX()</slot>
+    <slot>minusTranslationY()</slot>
+    <slot>minusTranslationZ()</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -425,8 +695,8 @@
      <y>664</y>
     </hint>
     <hint type="destinationlabel">
-     <x>909</x>
-     <y>593</y>
+     <x>810</x>
+     <y>626</y>
     </hint>
    </hints>
   </connection>
@@ -441,8 +711,8 @@
      <y>682</y>
     </hint>
     <hint type="destinationlabel">
-     <x>896</x>
-     <y>593</y>
+     <x>810</x>
+     <y>626</y>
     </hint>
    </hints>
   </connection>
@@ -457,8 +727,8 @@
      <y>670</y>
     </hint>
     <hint type="destinationlabel">
-     <x>871</x>
-     <y>593</y>
+     <x>810</x>
+     <y>626</y>
     </hint>
    </hints>
   </connection>
@@ -473,8 +743,8 @@
      <y>679</y>
     </hint>
     <hint type="destinationlabel">
-     <x>942</x>
-     <y>593</y>
+     <x>810</x>
+     <y>626</y>
     </hint>
    </hints>
   </connection>
@@ -489,8 +759,8 @@
      <y>660</y>
     </hint>
     <hint type="destinationlabel">
-     <x>979</x>
-     <y>593</y>
+     <x>810</x>
+     <y>626</y>
     </hint>
    </hints>
   </connection>
@@ -505,8 +775,8 @@
      <y>680</y>
     </hint>
     <hint type="destinationlabel">
-     <x>966</x>
-     <y>593</y>
+     <x>810</x>
+     <y>626</y>
     </hint>
    </hints>
   </connection>
@@ -517,8 +787,8 @@
    <slot>previousObject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>405</x>
-     <y>617</y>
+     <x>820</x>
+     <y>493</y>
     </hint>
     <hint type="destinationlabel">
      <x>410</x>
@@ -533,12 +803,236 @@
    <slot>nextObject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>532</x>
-     <y>617</y>
+     <x>910</x>
+     <y>493</y>
     </hint>
     <hint type="destinationlabel">
      <x>528</x>
      <y>581</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widget</sender>
+   <signal>changeRotationSliderValue(int)</signal>
+   <receiver>rotationSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>735</x>
+     <y>532</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>897</x>
+     <y>182</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rotationSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widget</receiver>
+   <slot>changeRotationDegrees(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>865</x>
+     <y>185</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>775</x>
+     <y>557</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rotationSlider_3</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widget</receiver>
+   <slot>changeScalingX(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>882</x>
+     <y>370</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>803</x>
+     <y>340</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rotationSlider_4</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widget</receiver>
+   <slot>changeScalingY(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>856</x>
+     <y>394</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>787</x>
+     <y>390</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rotationSlider_5</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widget</receiver>
+   <slot>changeScalingZ(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>852</x>
+     <y>413</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>749</x>
+     <y>408</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widget</sender>
+   <signal>changeScalingXSliderValue(int)</signal>
+   <receiver>rotationSlider_3</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>755</x>
+     <y>358</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>858</x>
+     <y>373</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widget</sender>
+   <signal>changeScalingYSliderValue(int)</signal>
+   <receiver>rotationSlider_4</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>757</x>
+     <y>431</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>874</x>
+     <y>391</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widget</sender>
+   <signal>changeScalingZSliderValue(int)</signal>
+   <receiver>rotationSlider_5</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>745</x>
+     <y>459</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>967</x>
+     <y>412</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_13</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>minusTranslationX()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>853</x>
+     <y>276</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>748</x>
+     <y>272</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_10</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>plusTranslationX()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>917</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>763</x>
+     <y>237</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_12</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>plusTranslationY()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>894</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>787</x>
+     <y>257</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_9</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>minusTranslationY()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>885</x>
+     <y>287</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>792</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_14</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>plusTranslationZ()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>946</x>
+     <y>266</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>789</x>
+     <y>212</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_11</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>minusTranslationZ()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>960</x>
+     <y>291</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>791</x>
+     <y>299</y>
     </hint>
    </hints>
   </connection>

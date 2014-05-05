@@ -129,7 +129,6 @@ void Box::initialize(vec3 boxColor)
 	if(initialized)	return;
 
 	Box::boxColor = boxColor;
-	height = 1;
 
 	initialized = true;
 }

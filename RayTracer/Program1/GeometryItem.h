@@ -22,7 +22,7 @@ using glm::mat4;
 
 // Generic geometry item.
 // Specific geometry should be defined in derived classes.
-class GeometryItem : public AbstractGeometryItem
+class GeometryItem
 {
 public:
 	// Draws the geometry item according to the specified model transformation matrix.
