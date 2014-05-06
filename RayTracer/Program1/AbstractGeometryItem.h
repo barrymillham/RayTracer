@@ -11,6 +11,9 @@
 
 #include "../glm/glm.hpp"
 
+using glm::vec3;
+using glm::mat4;
+
 // Abstract base class for all geometry items.
 // Only the "draw" operation is defined at this level, as a function that takes a transformation (world) matrix and should be
 // called from paintGL().

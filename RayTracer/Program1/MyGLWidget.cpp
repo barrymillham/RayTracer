@@ -121,7 +121,7 @@ void MyGLWidget::updateCamera()
 	//mat4 zoomTrans = glm::translate(mat4(1.0f), vec3(0,0,zoomDistance));
 	mat4 rotate_x = glm::rotate(mat4(1.0f), (float)upDownAngle, vec3(1,0,0));
 	mat4 rotate_y = glm::rotate(mat4(1.0f), (float)leftRightAngle, vec3(0,1,0));
-	vec4 eyePos(0,0,zoomDistance,1);
+	eyePos = vec4(0,0,zoomDistance,1);
 	eyePos = rotate_y * rotate_x * eyePos;
 	//send eyePos to shader for Bling-Phong lighting
 	glUniform4fv(attribs.u_cameraPos, 1, &eyePos[0]);
@@ -129,7 +129,7 @@ void MyGLWidget::updateCamera()
 	up = rotate_y * rotate_x * up;
 
 	vec3 eyePos3d(eyePos.x, eyePos.y, eyePos.z);
-	vec3 up3d(up.x, up.y, up.z);
+	up3d = vec3(up.x, up.y, up.z);
 
 	camera = glm::lookAt(eyePos3d, vec3(0,0,0), up3d);
 
@@ -170,7 +170,7 @@ char* MyGLWidget::textFileRead(const char* fileName) {
 void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 {
 	
-	//The way stacking works: 
+	//Stacking notes: 
 	/*
 	The yScale of each piece of geometry is recorded as that geometry's yScale.
 	That geometry is given to a SceneGraph Node which is then added as a child
@@ -193,8 +193,6 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		space and then call the most basic Draw() function (member of GeometryItem), which
 		takes the VBO, NBO and IBO into account and sends all the information into the shader.
 	*/
-
-	
 	
 	// Clear the scene, in case there's already something there
 	scene.clear();
@@ -225,7 +223,7 @@ void MyGLWidget::parseSceneDescription(SceneGraph &scene, std::string fileName)
 		//scene.addChildToHead(root);
 		//root->addChild(floor);
 		scene.addChildToHead(floor);
-
+		
 		// Add a transformation node to reverse the floor's scaling, and place items on top of the floor
 		// This will be the immediate parent for all floor-level furniture items.
 		//floorTransform = glm::scale(floorTransform, vec3(2, 2, 2));
@@ -724,4 +722,62 @@ void MyGLWidget::minusTranslationZ()
 	float temp = objects[iterator]->getTranslationZ();
 	objects[iterator]->setTranslationZ(temp-1.0f);
 	update();
+}
+
+void MyGLWidget::rayTrace_onClick() {
+
+	unsigned int width = 800; 
+	unsigned int height = 600; 
+
+	//build the camera vectors
+	vec3 eye = vec3(eyePos);
+	vec3 M = vec3(0,0,0);
+	vec3 C = M - eye;
+	C = glm::normalize(C);
+	vec3 UP = vec3(0,1,0);
+	vec3 V = up3d;
+	V *= glm::tan(glm::radians(45.0f));
+	mat4 rotationMatrix = glm::rotate(mat4(1.0f), 90.0f, C);
+	vec4 H4 = vec4(V.x, V.y, V.z, 0.0f) * rotationMatrix;
+	H4 *= static_cast<float>(4/3);
+	vec3 H = vec3(H4.x, H4.y, H4.z);
+
+	BMP output;
+	output.SetSize(width, height);
+	output.SetBitDepth(24);
+
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			vec3 rayPositionH = H;
+			vec3 rayPositionV = V;
+			rayPositionH *= (2 * (double)x) / (width - 1) - 1;
+			rayPositionV *= (2 * (double)y) / (height - 1) - 1;
+			vec3 P = M + rayPositionH + rayPositionV;
+			vec3 D = glm::normalize(P - eye);
+			vec3 color = vec3();
+			
+			color = rayTrace(eye, D, color);
+			//color = vec3(D.x*255, D.y*255, D.z*255); //This color is not going to just be the D value
+			setPixel(output, x, y, vec3(color.x * 255, color.y * 255, color.z * 255));
+		}
+	}
+
+	output.WriteToFile("output.bmp");
+
+
+}
+
+void MyGLWidget::setPixel(BMP& output, int x, int y, vec3 color) {
+	output(x,y)->Red = glm::abs(color.x);
+	output(x,y)->Green = glm::abs(color.y);
+	output(x,y)->Blue = glm::abs(color.z);
+}
+
+vec3 MyGLWidget::rayTrace(vec3 eye, vec3 D, vec3& color) {
+	SceneGraph::Node* head = scene.getHead();
+	float intersection = head->testRayIntersection(eye, D, mat4(1.0f));
+
+	if (intersection != -1) return vec3(1,1,1);
+	else return vec3(0,0,0);
+	return vec3(-1,-1,-1);
 }

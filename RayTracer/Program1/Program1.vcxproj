@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="EasyBMP.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MyGLWidget.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -224,6 +225,10 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="Chair.h" />
     <ClInclude Include="Drawing.h" />
+    <ClInclude Include="EasyBMP.h" />
+    <ClInclude Include="EasyBMP_BMP.h" />
+    <ClInclude Include="EasyBMP_DataStructures.h" />
+    <ClInclude Include="EasyBMP_VariousBMPutilities.h" />
     <ClInclude Include="GeneratedFiles\ui_program1.h" />
     <ClInclude Include="GeometryItem.h" />
     <CustomBuild Include="MyGLWidget.h">
@@ -303,6 +308,9 @@
     <Text Include="scene2.txt" />
     <Text Include="scene3.txt" />
     <Text Include="testScene.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="output.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

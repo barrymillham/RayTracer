@@ -62,6 +62,39 @@ public:
 		float getYTrans() {
 			return yTrans;
 		}
+		
+		float testRayIntersection(vec3 p0, vec3 v0, mat4 tInv) {
+			
+			
+			//construct temporary matrix using stored values
+			mat4 scaleMat = glm::scale(mat4(1.0f), scalings);
+			mat4 rotXMat = glm::rotate(mat4(1.0f), rotations.x, vec3(1,0,0));
+			mat4 rotYMat = glm::rotate(mat4(1.0f), rotations.y, vec3(0,1,0));
+			mat4 rotZMat = glm::rotate(mat4(1.0f), rotations.z, vec3(0,0,1));
+			mat4 transMat = glm::translate(mat4(1.0f), translations);
+			mat4 transform = glm::inverse(transMat * rotZMat * rotYMat * rotXMat * scaleMat);
+			
+			float intersection;
+			//If node has geometry, test it's geom for an intersection. else, intersection = -1
+			intersection = (geo)? geo->testRayIntersection(p0,v0,transform * tInv) : -1;
+			
+			//intersection = +x or -1
+			if (children[0] == NULL) 
+				return intersection;
+	
+			else { 
+				//iterate through children, record minimum intersection > 0 and return it
+				for (int i = 0; i < children.size(); i++) {
+					float p = children[i]->getGeometry()->testRayIntersection(p0, v0, transform * tInv);
+					if (p != -1) //If there was an intersection 
+						if (intersection == -1 || p < intersection)  //If it's closer than the previous intersection
+							intersection = p;	//Make it the new "closest intersection"
+				}
+				return intersection;
+			}
+			return -1.0; // failsafe
+		}
+		
 		// Draw the node, and all of its child nodes (preorder traversal).
 		// parentTransform: transformation matrix of the parent node, which will
 		//		be composed with this node's transformation for drawing and passed
@@ -159,6 +192,8 @@ public:
 	{
 		head->addChild(child);
 	}
+
+	Node* getHead(){return head;}
 
 	// Draws the scene (traversing from the head node)
 	void draw(mat4 m = mat4(1.0f))

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
+    <width>1012</width>
     <height>720</height>
    </rect>
   </property>
@@ -528,13 +528,43 @@
      <string>z</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_15">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>470</y>
+      <width>181</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Gigi</family>
+      <pointsize>24</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>CrossCursor</cursorShape>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>ReighTrace</string>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
+     <width>1012</width>
      <height>21</height>
     </rect>
    </property>
@@ -588,6 +618,7 @@
     <slot>minusTranslationX()</slot>
     <slot>minusTranslationY()</slot>
     <slot>minusTranslationZ()</slot>
+    <slot>rayTrace_onClick()</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -1033,6 +1064,22 @@
     <hint type="destinationlabel">
      <x>791</x>
      <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_15</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>rayTrace_onClick()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>925</x>
+     <y>603</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>777</x>
+     <y>603</y>
     </hint>
    </hints>
   </connection>

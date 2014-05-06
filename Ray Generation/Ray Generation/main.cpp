@@ -32,32 +32,6 @@ int main(int argc, char** argv) {
 	output.SetSize(width, height);
 	output.SetBitDepth(24);
 
-	/*Pseudocode for what we need to do for this milestone
-
-	//Ray equation: R = E + t(P-E)
-	For x = 0 to width - 1					//  For every pixel
-		for y = 0 to height - 1				// ^^^
-			//Calculate Ray Direction based off of x,y
-			
-			P = M + (2*x/(width-1)-1)*H + (2*y/(height-1)-1)*V
-			D = (P-E)/|P-E|					//D is direction of the ray. E is origin point, P is point somewhere along the ray
-			pixel(x,y)->Red = D.x
-			pixel(x,y)->Green = D.y
-			pixel(x,y)->Blue = D.z
-	*/
-
-	/*		~Extra notes~  
-	(0,0) is the top left corner of the bmp
-	//Look in powerpoints notes: Raytracing part 3 
-	V = up * tan(phi)
-	H = -u * tan(theta)
-	phi = angle between 
-	M is the center of the screen I think? So (400, 300)?
-		
-	
-	
-	*/
-
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
 			vec3 rayPositionH = H;
