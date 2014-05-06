@@ -52,6 +52,7 @@ public:
 
 	virtual float Chair::testRayIntersection(vec3 p0, vec3 v0, mat4 tInv)
 	{
+		tInv = glm::inverse(tInv);
 		std::vector<float> tValues;
 
 		mat4 seatTrans = translate(mat4(1.0f), vec3(0.0f, 0.5f, 0.0f));

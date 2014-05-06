@@ -63,32 +63,23 @@ public:
 			return yTrans;
 		}
 		
-		float testRayIntersection(vec3 p0, vec3 v0, mat4 tInv) {
-			
-			
-			//construct temporary matrix using stored values
-			mat4 scaleMat = glm::scale(mat4(1.0f), scalings);
-			mat4 rotXMat = glm::rotate(mat4(1.0f), rotations.x, vec3(1,0,0));
-			mat4 rotYMat = glm::rotate(mat4(1.0f), rotations.y, vec3(0,1,0));
-			mat4 rotZMat = glm::rotate(mat4(1.0f), rotations.z, vec3(0,0,1));
-			mat4 transMat = glm::translate(mat4(1.0f), translations);
-			mat4 transform = glm::inverse(transMat * rotZMat * rotYMat * rotXMat * scaleMat);
-			
-			float intersection;
+		float testRayIntersection(vec3 p0, vec3 v0, mat4 parentTransformation) {
+			mat4 nodeTransform = getTransformationMatrix();
+			mat4 transformation = parentTransformation * nodeTransform;
+
 			//If node has geometry, test it's geom for an intersection. else, intersection = -1
-			intersection = (geo)? geo->testRayIntersection(p0,v0,transform * tInv) : -1;
+			float intersection = (geo)? geo->testRayIntersection(p0,v0,transformation) : -1;
 			
 			//intersection = +x or -1
-			if (children[0] == NULL) 
-				return intersection;
+			if (children[0] == NULL) return intersection;
 	
 			else { 
 				//iterate through children, record minimum intersection > 0 and return it
 				for (int i = 0; i < children.size(); i++) {
-					float p = children[i]->getGeometry()->testRayIntersection(p0, v0, transform * tInv);
-					if (p != -1) //If there was an intersection 
-						if (intersection == -1 || p < intersection)  //If it's closer than the previous intersection
-							intersection = p;	//Make it the new "closest intersection"
+					float childIntersection = children[i]->getGeometry()->testRayIntersection(p0, v0, transformation);
+					if (childIntersection != -1) //If there was an intersection 
+						if (intersection == -1 || childIntersection < intersection)  //If it's closer than the previous intersection
+							intersection = childIntersection;	//Make it the new "closest intersection"
 				}
 				return intersection;
 			}
@@ -101,32 +92,29 @@ public:
 		//		on to its children in similar fashion
 		void draw(mat4 parentTransform)
 		{
+			mat4 transform = getTransformationMatrix();
+			mat4 composition = parentTransform * transform;
+			if(geo) {			
+				if(selected) {
+					glUniform1i(attribs.u_ambientOnly, 1);
+					geo->draw(composition);
+					glUniform1i(attribs.u_ambientOnly, 0); // re-enable advanced lighting for the rest of the objects
+				}
+				else geo->draw(composition);
+			}
+			for(int i = 0; i < children.size(); i++)
+				children[i]->draw(composition);
+		}
+
+		mat4 getTransformationMatrix() {
 			//construct temporary matrix using stored values
 			mat4 scaleMat = glm::scale(mat4(1.0f), scalings);
 			mat4 rotXMat = glm::rotate(mat4(1.0f), rotations.x, vec3(1,0,0));
 			mat4 rotYMat = glm::rotate(mat4(1.0f), rotations.y, vec3(0,1,0));
 			mat4 rotZMat = glm::rotate(mat4(1.0f), rotations.z, vec3(0,0,1));
 			mat4 transMat = glm::translate(mat4(1.0f), translations);
-
-			mat4 transform = transMat * rotZMat * rotYMat * rotXMat * scaleMat;
-			
-			mat4 composition = parentTransform * transform;
-
-			if(geo)
-			{			
-				if(selected)
-				{
-					glUniform1i(attribs.u_ambientOnly, 1);
-					geo->draw(composition);
-					glUniform1i(attribs.u_ambientOnly, 0); // re-enable advanced lighting for the rest of the objects
-				}
-				else 
-					geo->draw(composition);
-			}
-			for(int i = 0; i < children.size(); i++)
-				children[i]->draw(composition);
+			return (transMat * rotZMat * rotYMat * rotXMat * scaleMat);
 		}
-
 		void setSelected(bool s) {selected = s;}
 		bool getSelected() {return selected;}
 		int getRotationDegreesY() {return rotations.y;}

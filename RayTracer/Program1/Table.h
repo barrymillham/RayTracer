@@ -48,6 +48,7 @@ public:
 
 	virtual float Table::testRayIntersection(vec3 p0, vec3 v0, mat4 tInv)
 	{
+		tInv = glm::inverse(tInv);
 		std::vector<float> tValues;
 
 		mat4 top_scale = scale(mat4(1.0f), vec3(1.0f, 0.2f, 1.0f));

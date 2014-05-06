@@ -369,6 +369,7 @@ void Mesh::subDivide()
 
 float Mesh::testRayIntersection(vec3 p0, vec3 v0, mat4 tInv)
 {
+	tInv = glm::inverse(tInv);
 	//LOOP THROUGH ALL FACES, storing intersection point in vector
 	std::vector<float> intersections;
 	for(int i=0; i<faces.size(); i++)

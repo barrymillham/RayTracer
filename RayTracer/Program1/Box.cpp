@@ -135,6 +135,7 @@ void Box::initialize(vec3 boxColor)
 
 float Box::testRayIntersection(vec3 p0, vec3 v0, mat4 tInv)
 {
+	tInv = glm::inverse(tInv);
 	//FIND 
 	vec4 D(glm::normalize(v0), 0); // note: D = || P - E || = || v0 || (recall that v0 = P - E)
     mat4 tStarInv = tInv; // tInv with three elements zeroed out - a special form that we need to transform D
