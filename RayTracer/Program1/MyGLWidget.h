@@ -20,6 +20,7 @@
 #include <fstream>
 #include <vector>
 
+#include "EasyBMP.h"
 #include "Drawing.h"
 
 #include "SceneGraph.h"
@@ -44,10 +45,12 @@ public:
 	void initializeGL(void);
 	void paintGL(void);
 	void resizeGL(int, int);
+	void setPixel(BMP& output, int x, int y, vec3 color);
 
 	//helper function to read shader source and put it in a char array
 	//thanks to Swiftless.com
 	char* textFileRead(const char*);
+	vec3 rayTrace(vec3 eye, vec3 D, vec3& color);
 
 public slots:
 	void changeZoom(int);
@@ -72,6 +75,7 @@ public slots:
 	void minusTranslationY();
 	void plusTranslationZ();
 	void minusTranslationZ();
+	void rayTrace_onClick();
 
 signals:
 	void changeRotationSliderValue(int);
@@ -100,6 +104,8 @@ private:
 	glm::mat4 projection, camera;
 
 	int zoom, upDownAngle, leftRightAngle;
+	vec4 eyePos;
+	vec3 up3d;
 	vec4 lightPos;
 
 	void updateCamera();
