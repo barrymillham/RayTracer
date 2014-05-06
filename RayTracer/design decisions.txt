@@ -1,0 +1,17 @@
+DESIGN DECISIONS:
+
+We decided to derive all types of objects (including meshes) from AbstractGeometryItem which is a 
+pure virtual class so that we could call ray intersection testing while traversing the scene graph
+and they would just run their overrided testing functions. 
+
+For iterating through the objects in the scene to select them, we did that by pushing them
+all to a vector and storing a "selected" iterator. this made it very easy to know what object
+was currently selected. 
+
+The scene graph was designed in a very object-oriented way so that it was easy to extend
+and add new functionality -- for example, adding the ray tracing intersection testing for each 
+piece of geometry was very simple. 
+
+Finally, we switched to storing individual rotations, translations, and scalings vectors
+in each node, instead of a matrix, so that we could easily apply the transformations gotten from the
+UI without weird things happening. 

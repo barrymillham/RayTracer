@@ -773,11 +773,46 @@ void MyGLWidget::setPixel(BMP& output, int x, int y, vec3 color) {
 	output(x,y)->Blue = glm::abs(color.z);
 }
 
-vec3 MyGLWidget::rayTrace(vec3 eye, vec3 D, vec3& color) {
+vec3 MyGLWidget::rayTrace(vec3 eye, vec3 D, vec3 &color) {
 	SceneGraph::Node* head = scene.getHead();
 	float intersection = head->testRayIntersection(eye, D, mat4(1.0f));
 
-	if (intersection != -1) return vec3(1,1,1);
-	else return vec3(0,0,0);
+	float reflectivity = .2;
+	vec3 reflectedRayColor;
+	vec3 thisColor;
+
+	//WE WERE CLOSE TO MAKING THIS WORK: (had both recursive and shadow feelers)
+	
+	//IF INTERSECTION, THEN DO SHADOW FEELERS AND RAY REFLECTION
+	//if(intersection != -1)
+	//{
+	//	//create shadow feeler ray
+	//	vec3 newOrigin = eye + intersection*(D-eye);
+	//	vec3 direction = lightPos - newOrigin;
+	//	float shadowIntersection = head->testRayIntersection(newOrigin, direction, mat4(1.0f));
+	//	//if shaderIntersection is between 0 and distance to light, you know this point is in shadow
+	//	//apparently "distance to light" will correspond to shadowIntersection value of 1 since we didn't normalize...
+	//	if(shadowIntersection > .01 && shadowIntersection < 1)
+	//	{
+	//		//IN SHADOW
+	//		return vec3(0,0,0); //is this right?
+	//	}
+	//	else{ //WILL REFLECT (and recurse)
+	//		//HOW DO I GET THE COLOR AND NORMAL OF THE INTERSECTION POINT?
+	//		thisColor = 
+
+	//		//create new ray
+	//		direction = -glm::reflect(direction, normal);
+
+	//		reflectedRayColor = rayTrace(newOrigin, direction);
+
+	//		return reflectivity*reflectedRayColor + (1-reflectivity)*thisColor;
+	//	}
+
+	//}
+	//else
+	//	return vec3(0,0,0);
+
+
 	return vec3(-1,-1,-1);
 }
