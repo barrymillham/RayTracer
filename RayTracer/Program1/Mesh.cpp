@@ -37,6 +37,49 @@ vec3 Mesh::Vertex::getNormal()
 	return glm::normalize(sumNormals);
 }
 
+int Mesh::splitFace(Face *f, Vertex *p1, Vertex *p2)
+{
+	// Find halfedges pointing to p1 and p2
+	HalfEdge *he_p1 = p1->halfEdge;
+	while(he_p1->vertex != p1)
+		he_p1 = he_p1->next;
+	HalfEdge *he_p2 = he_p1;
+	while(he_p2->vertex != p2)
+		he_p2 = he_p2->next;
+
+	// Create two new halfedges on the split line
+	int he1 = addHalfEdge(p2, he_p2->next, 0, 0);
+	int he2 = addHalfEdge(p1, he_p1->next, 0, 0);
+	HalfEdge *pHE1 = getHalfEdge(he1);
+	HalfEdge *pHE2 = getHalfEdge(he2);
+
+	// Create a new face
+	int newFace = addFace(pHE1, f->normal);
+	Face *pNewFace = getFace(newFace);
+
+	// Point he1 to the new face, and he2 to the old one
+	pHE1->face = pNewFace;
+	pHE2->face = f;
+	// Point the new face to he1, and the old face to he2
+	pNewFace->halfEdge = pHE1;
+	f->halfEdge = pHE2;
+
+	// Point p1 to he1 and p2 to he2
+	p1->halfEdge = pHE1;
+	p2->halfEdge = pHE2;
+
+	// Fix the next pointers for he_p1 and he_p2
+	he_p1->next = pHE1;
+	he_p2->next = pHE2;
+
+	// he1 and he2 are symmetric to each other
+	pHE1->sym = pHE2;
+	pHE2->sym = pHE1;
+
+	// We *should* be done now (assuming I remembered all the pointers! :-)) - return the index of the new face
+	return newFace;
+}
+
 Mesh::Vertex Mesh::getCenterPoint(Face* face)
 {
 	std::vector<vec3> positions;

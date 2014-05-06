@@ -35,10 +35,6 @@ public:
 
 	struct Face
 	{
-		vec3 p0, p1, p2; // TODO: remove these, these are only useful for the old face list structure and are in place so we don't break things yet
-		Face() // also to be removed once half-edge is fully implemented
-		{ }
-
 		vec3 normal;
 
 		HalfEdge *halfEdge;
@@ -211,6 +207,10 @@ public:
 	{
 		return &halfEdges[index];
 	}
+
+	// Split a face by drawing a line from p1 to p2. p1 and p2 must be part of this face.
+	// Returns the index of the newly-created face.
+	int splitFace(Face *f, Vertex *p1, Vertex *p2);
 
 	// Determine the center of a face
 	Vertex getCenterPoint(Face* face);
