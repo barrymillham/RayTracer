@@ -281,11 +281,14 @@ void Mesh::subDivide()
 		//For each halfedge around the face.
 		for (HalfEdge* originalHe = firstHe; originalHe->next != firstHe; originalHe = originalHe->next) {
 			HalfEdge newHalfEdge = *originalHe; //Create halfedge identical to this halfedge
+			//add it to newMesh
+			newMesh.halfEdges.push_back(newHalfEdge);
 			newHalfEdge.halfVertex = NULL; //clear the new halfedge's halfvertex. Only the original needs it.
 			//I foresee a problem with this HE going out of scope and so all the information is borked.
 
 			//Update all the original half-edge data members to reference the new halfedge that is placed in 
 			//	front of it.
+			originalHe->vertex->halfEdge = &newHalfEdge;
 			originalHe->vertex = originalHe->halfVertex;
 			originalHe->halfVertex = NULL;
 			originalHe->next = &newHalfEdge;
@@ -330,6 +333,8 @@ void Mesh::subDivide()
 			iterator->face = newFaces[i];
 			//set newFaces[i]'s HE to this HE
 			newFaces[i]->halfEdge = iterator;
+			newFaces[i]->normal = newMesh.faces[i].normal;
+			newFaces[i]->centerPoint = NULL;
 		}
 		//set last one to face 1 -- the next one should now be the first one
 		iterator = iterator->next;
@@ -337,7 +342,6 @@ void Mesh::subDivide()
 		
 		
 		//NOW WE WILL CREATE THE NEW HE's for this face that are between the center point and the new vertices
-		//note: newvertices should be by face. right now it is just a big list of all new vertices
 		//temp vector of HE's that point out from middle to be used for connecting "nexts"
 		std::vector<HalfEdge*> outwardHEs;
 		std::vector<HalfEdge*> inwardHEs;
@@ -345,6 +349,10 @@ void Mesh::subDivide()
 			//he1 and he2 are down and up
 			HalfEdge he1(newMesh.faces[i].centerPoint, NULL, NULL, newFaces[j]); //face to the left -- NOT SURE IF THIS IS RIGHT FACE -- now face to the right.....now clap your hands
 			HalfEdge he2(newMesh.faces[i].newVertices[j], NULL, &he1, newFaces[(j+1)%newMesh.faces[i].newVertices.size()]);//face to the right
+			newMesh.faces[i].newVertices[j]->halfEdge = &he2;
+			//add them to newMesh
+			newMesh.halfEdges.push_back(he1);
+			newMesh.halfEdges.push_back(he2);
 			outwardHEs.push_back(&he2);
 			inwardHEs.push_back(&he1);
 			he1.sym = &he2;
@@ -362,25 +370,15 @@ void Mesh::subDivide()
 			{
 				newFaces[i]->halfEdge->next = inwardHEs[i];
 			}
-
-
-			//DID WE UPDATE ALL HALFEDGES' FACES TO NEW FACES? AND EVERYTHING ELSE?????
 					
 			int temp = j;
 			if((temp-1) < 0) temp = newMesh.faces[i].newVertices.size()-1;
 			he1.next = outwardHEs[temp];
 			newMesh.faces[i].centerPoint->halfEdge = &he1;
 		}
-
-		
 	}
 
-
-
-		
-
-
-
+	
 	/*
 	By this point, the mesh should be in a state where it has been completely subdivided. All new vertices 
 	have been added, all new halfedges have been added, all new faces have been added.
@@ -404,7 +402,27 @@ void Mesh::subDivide()
 	}
 
 
+	//LEFT TO UPDATE IN NEWMESH:
+	//faces, as well as their normals, halfEdge, centerPoint -- DONE
+	//vertices, as well as their pos, halfEdge -- DONE
+	//halfEdges, as well as their vertex, next, sym, face, halfVertex -- not sure
 
+
+	//update newMesh's faces
+	newMesh.faces.clear();
+	for(int i=0; i<newFaces.size(); i++)
+	{
+		newMesh.faces.push_back(*newFaces[i]);
+	}
+
+	//update newMesh's vertices
+	//run through all OLD faces, getting the "newVertices" AND centerPoint for that face and adding that to newMesh's vertices along with old vertices...?
+	for(int i=0; i<this->faces.size(); i++)
+	{
+		for(int j=0; j<this->faces[i].newVertices.size(); j++)
+			newMesh.vertices.push_back(*this->faces[i].newVertices[j]);
+		newMesh.vertices.push_back(*this->faces[i].centerPoint);
+	}
 
 	//Finally, overwrite THIS mesh to be equal to the mesh that we just created!
 	*this = newMesh; 
