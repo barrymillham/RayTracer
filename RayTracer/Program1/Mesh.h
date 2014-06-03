@@ -212,6 +212,8 @@ public:
 	// Returns the index of the newly-created face.
 	int splitFace(Face *f, Vertex *p1, Vertex *p2);
 
+	void triangulateAllFaces();
+
 	// Determine the center of a face
 	Vertex getCenterPoint(Face* face);
 

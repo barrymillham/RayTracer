@@ -88,6 +88,7 @@ private:
 	//AttribLocations attribs; // now a global variable, declared as an extern in Drawing.h and defined in MyGLWidget.cpp
 
 	Mesh mesh;
+	std::vector<Mesh> sceneMeshes;
 
 	std::vector<SceneGraph::Node*> objects;
 	int iterator;
@@ -105,5 +106,5 @@ private:
 	void updateCamera();
 	void parseSceneDescription(SceneGraph &scene, std::string fileName);
 
-	//void parseGeometryDescription(Mesh &mesh, std::string fileName);
+	void parseGeometryDescription(Mesh &mesh, std::string fileName);
 };

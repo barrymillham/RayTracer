@@ -80,6 +80,20 @@ int Mesh::splitFace(Face *f, Vertex *p1, Vertex *p2)
 	return newFace;
 }
 
+void Mesh::triangulateAllFaces()
+{
+	for(int i = 0; i < faces.size(); i++)
+	{
+		// Pick a vertex on the face to "fan out" from
+		Vertex *fanVert = faces[i].halfEdge->vertex;
+		HalfEdge *he = faces[i].halfEdge->next->next;
+		do // loop over all vertices except the one we just picked, and the one right next to it
+		{
+			splitFace(&faces[i], fanVert, he->vertex);
+		} while(he->next != faces[i].halfEdge);
+	}
+}
+
 Mesh::Vertex Mesh::getCenterPoint(Face* face)
 {
 	std::vector<vec3> positions;
